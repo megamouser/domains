@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Domain;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 
 class DomainController extends Controller
 {
@@ -98,9 +100,10 @@ class DomainController extends Controller
 
     public function importing(Request $request)
     {
-        dd(request()->file);
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-        $spreadsheet = $reader->load();
+        dump($_FILES);
+        dump(request()->userfile);
+        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+        // $spreadsheet = $reader->load();
     }
 
     private function validateRequest()
