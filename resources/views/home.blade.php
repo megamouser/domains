@@ -1,0 +1,9 @@
+@extends('main')
+@section('content')
+<div>
+    @include("parts/navigation")
+</div>
+<div>
+    Homepage
+</div>
+@endsection
