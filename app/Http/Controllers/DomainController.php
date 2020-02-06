@@ -100,10 +100,21 @@ class DomainController extends Controller
 
     public function importing(Request $request)
     {
-        dump($_FILES);
-        dump(request()->userfile);
-        // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
-        // $spreadsheet = $reader->load();
+        $request->validate([
+            "csv" => "required|mimes:csv,txt"
+        ]);
+        
+        $csv_file = file($request->csv->getRealPath());
+        $parts = $this->csvStringsToArray($csv_file);
+        $count_parts = count($parts);
+        $count_strings_in_part = count($parts[0]);
+
+        foreach($parts as $key => $value)
+        {
+            $this->csvStringImportFirst($value);
+        }
+        
+        // return view("domain/import/settings", compact("parts", "count_parts", "count_strings_in_part"));
     }
 
     private function validateRequest()
@@ -111,5 +122,32 @@ class DomainController extends Controller
         return request()->validate([
             'name' => 'required|min:3',
         ]);
+    }
+
+    private function csvStringsToArray($csv_file, $rows_in_complect = 1000, $first_row_as_params = true) 
+    {
+        if($first_row_as_params) 
+        {
+            $data = array_slice($csv_file, 1);
+            $result = (array_chunk($data, $rows_in_complect));
+        } 
+        else 
+        {
+            $data = array_slice($csv_file, 0);        
+            $result = (array_chunk($data, $rows_in_complect));
+        }
+
+        return $result;
+    }
+
+    private function csvStringImportFirst($arr)
+    {
+        $i = 0;
+        foreach ($arr as $key => $value) 
+        {
+            $result = str_getcsv($value);
+            $domainName = $result[0];
+            $i++;
+        }
     }
 }

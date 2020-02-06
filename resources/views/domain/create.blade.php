@@ -12,7 +12,7 @@
         @csrf
 
         <div>
-            <input type="text" name="name" value="{{ old('name') }}">
+            <input type="text" placeholder="name" name="name" value="{{ old('name') }}">
         </div>
 
         <br>

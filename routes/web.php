@@ -11,7 +11,7 @@
 |
 */
 
-Route::get("test", function() {
+Route::get("phpinfo", function() {
     phpinfo();
 });
 
@@ -20,7 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('/domains/import', 'DomainController@import');
-Route::post('/domains/importing', 'DomainController@importing');
+Route::post('/domains/import/settings', 'DomainController@importing');
 
 Route::resources([
     'domains' => 'DomainController',

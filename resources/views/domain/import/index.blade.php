@@ -8,14 +8,13 @@
 </div>
 <br>
 <div>
-    <!-- Тип кодирования данных, enctype, ДОЛЖЕН БЫТЬ указан ИМЕННО так -->
-    <form enctype="multipart/form-data" action="/domains/importing" method="POST">
+    <form enctype="multipart/form-data" action="/domains/import/settings" method="POST">
         @csrf
-        <input name="userfile" type="file">
+        <input name="csv" type="file">
         <br>
         <input type="submit" value="save">
     </form>
 
-    <div>{{ $errors->first('file') }}</div>
+    <div>{{ $errors->first('csv') }}</div>
 </div>
 @endsection
