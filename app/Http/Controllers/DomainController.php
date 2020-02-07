@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use DB;
 
 
 class DomainController extends Controller
@@ -16,7 +17,7 @@ class DomainController extends Controller
      */
     public function index()
     {
-        $domains = Domain::all();
+        $domains = Domain::paginate(15);
         return view('domain/index', compact('domains'));
     }
 
@@ -51,7 +52,6 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {
-        dump("Showing the domain");
         return view('domain/show', compact('domain'));
     }
 
@@ -63,8 +63,6 @@ class DomainController extends Controller
      */
     public function edit(Domain $domain)
     {
-        dump("Editing the domain");
-        dump($domain->getAttributes());
         return view('domain/edit', compact('domain'));
     }
 
@@ -98,23 +96,32 @@ class DomainController extends Controller
         return view('domain/import/index', compact('domains'));
     }
 
-    public function importing(Request $request)
+    public function settings(Request $request)
     {
         $request->validate([
             "csv" => "required|mimes:csv,txt"
         ]);
         
         $csv_file = file($request->csv->getRealPath());
-        $parts = $this->csvStringsToArray($csv_file);
-        $count_parts = count($parts);
-        $count_strings_in_part = count($parts[0]);
-
-        foreach($parts as $key => $value)
+        $parts = $this->csvStringsToArray($csv_file, 20000);
+        foreach ($parts as $key => $strings) 
         {
-            $this->csvStringImportFirst($value);
+            foreach($strings as $key => $string) 
+            {
+                $arr_data = str_getcsv($string);
+                $str_domainname = $arr_data[0];
+                $domain = new Domain;
+                $domain->name = $str_domainname;
+                $domain->save();
+            }
         }
-        
-        // return view("domain/import/settings", compact("parts", "count_parts", "count_strings_in_part"));
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->get('search');
+        $domains = DB::table('domains')->where('name', 'like', '%' . $search . '%')->paginate(15);
+        return view('domain/index', compact('domains'));
     }
 
     private function validateRequest()
@@ -138,16 +145,5 @@ class DomainController extends Controller
         }
 
         return $result;
-    }
-
-    private function csvStringImportFirst($arr)
-    {
-        $i = 0;
-        foreach ($arr as $key => $value) 
-        {
-            $result = str_getcsv($value);
-            $domainName = $result[0];
-            $i++;
-        }
     }
 }

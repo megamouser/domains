@@ -27,11 +27,6 @@
     </div>
 
     <div>
-        @foreach($parts as $key => $value)
-            <div>Part Id: {{ $key }}</li>
-            <div>Part Import Status: Fail</div>
-            <br>
-        @endforeach
     </div>
 
     <!-- <form enctype="multipart/form-data" action="/domains/importing" method="POST">
