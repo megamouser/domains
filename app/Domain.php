@@ -10,6 +10,6 @@ class Domain extends Model
 
     public function options()
     {
-        $this->hasMany(Option::class);
-    }
+        return $this->belongsToMany(Option::class)->withTimestamps();
+    }  
 }

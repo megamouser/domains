@@ -15,6 +15,12 @@ Route::get("phpinfo", function() {
     phpinfo();
 });
 
+Route::get("test", function() {
+    $domain = \App\Domain::first();
+    $options = \App\Option::all();
+    $domain->options()->detach($options);
+});
+
 Route::get('/', function () {
     return view('home');
 });
