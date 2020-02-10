@@ -4,7 +4,7 @@
     @include('parts/navigation')
 </div>
 <div>
-    Domains / Show
+    Domains / {{ $domain->name }}
 </div>
 <div>
     id: {{ $domain->id }}
@@ -22,6 +22,22 @@
         @csrf
 
         <button type="submit">delete</button>
+    </form> 
+
+    <br><hr>
+
+    <div>
+        Statistics Options
+    </div>
+
+    Not Found
+
+    <br>
+    
+    <form action="" method="">
+        @csrf
+
+        <button type="submit">update statistics</button>
     </form> 
 </div>
 @endsection

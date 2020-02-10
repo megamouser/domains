@@ -18,7 +18,9 @@ class DomainController extends Controller
     public function index()
     {
         $domains = Domain::paginate(15);
-        return view('domain/index', compact('domains'));
+        $search = '';
+
+        return view('domain/index', compact('domains', 'search'));
     }
 
     /**
@@ -120,8 +122,8 @@ class DomainController extends Controller
     public function search(Request $request)
     {
         $search = $request->get('search');
-        $domains = DB::table('domains')->where('name', 'like', '%' . $search . '%')->paginate(15);
-        return view('domain/index', compact('domains'));
+        $domains = DB::table('domains')->where('name', 'like', '%' . $search . '%')->paginate(15)->appends(request()->query());
+        return view('domain/index', compact('domains', 'search', 'domainsCount'));
     }
 
     private function validateRequest()

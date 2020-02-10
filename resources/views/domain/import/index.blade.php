@@ -10,8 +10,11 @@
 <div>
     <form enctype="multipart/form-data" action="/domains/import/settings" method="POST">
         @csrf
+        
         <input name="csv" type="file">
+        
         <br>
+        
         <input type="submit" value="save">
     </form>
 

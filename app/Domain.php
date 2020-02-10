@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Domain extends Model
 {
-    protected $fillable = ["name"];
+    protected $guarded = [];
+
+    public function options()
+    {
+        $this->hasMany(Option::class);
+    }
 }
