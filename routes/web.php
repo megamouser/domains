@@ -16,8 +16,9 @@ Route::get("phpinfo", function() {
 });
 
 Route::get("test", function() {
-    $domain = \App\Domain::first();
+    $domains = \App\Domain::where("id", "<", 5)->get();
     $options = \App\Option::all();
+    dd($options[0]->getAttributes());
     $domain->options()->detach($options);
 });
 

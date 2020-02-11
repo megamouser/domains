@@ -8,8 +8,13 @@ class Domain extends Model
 {
     protected $guarded = [];
 
+    // public function options()
+    // {
+    //     return $this->belongsToMany(Option::class)->withTimestamps();
+    // }  
+
     public function options()
     {
-        return $this->belongsToMany(Option::class)->withTimestamps();
-    }  
+        return $this->hasMany(Option::class);
+    }
 }

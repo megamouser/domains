@@ -27,17 +27,11 @@
     <br><hr>
 
     <div>
-        Statistics Options
+        Statistics Params
     </div>
 
-    Not Found
-
-    <br>
-    
-    <form action="" method="">
-        @csrf
-
-        <button type="submit">update statistics</button>
-    </form> 
+    <div>
+        
+    </div>
 </div>
 @endsection

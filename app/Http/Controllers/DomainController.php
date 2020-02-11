@@ -54,7 +54,19 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {
-        return view('domain/show', compact('domain'));
+        $optionCount = count($domain->options);
+
+        if($optionCount) 
+        {
+            dump("Опции обнаружены");
+            dump($domain->options);
+            return view('domain/show', compact('domain'));
+
+        } 
+        else 
+        {
+            dump("Опции не обнаружены");
+        }
     }
 
     /**
