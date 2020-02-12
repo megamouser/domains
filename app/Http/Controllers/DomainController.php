@@ -58,7 +58,6 @@ class DomainController extends Controller
 
         if($optionCount) 
         {
-            dump("Опции обнаружены");
             dump($domain->options);
             return view('domain/show', compact('domain'));
 
@@ -66,6 +65,7 @@ class DomainController extends Controller
         else 
         {
             dump("Опции не обнаружены");
+            return view('domain/show', compact('domain'));
         }
     }
 

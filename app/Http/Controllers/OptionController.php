@@ -82,4 +82,9 @@ class OptionController extends Controller
     {
         //
     }
+
+    public function test(Request $request)
+    {
+        return response()->json(['message' => 'My response from option controller'], 200);
+    }
 }

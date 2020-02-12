@@ -15,21 +15,18 @@ Route::get("phpinfo", function() {
     phpinfo();
 });
 
-Route::get("test", function() {
-    $domains = \App\Domain::where("id", "<", 5)->get();
-    $options = \App\Option::all();
-    dd($options[0]->getAttributes());
-    $domain->options()->detach($options);
-});
-
 Route::get('/', function () {
     return view('home');
 });
 
 Route::get('/domains/import', 'DomainController@import');
+
+Route::post('/test', 'OptionController@test');
+
 Route::post('/domains/import/settings', 'DomainController@settings');
 Route::get('/domains/search', 'DomainController@search');
 
 Route::resources([
     'domains' => 'DomainController',
+    'options' => 'OptionController'
 ]);

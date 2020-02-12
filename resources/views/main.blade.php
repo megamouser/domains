@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Domains Statistics</title>
     <style>
-
         ul.pagination > li
         {
             display: inline;
@@ -27,21 +26,33 @@
   crossorigin="anonymous">
 </script>
 <script>
-    $(document).ready(function() {
-        $("#check_all").on("click", function() {
-            if(this.checked) 
-            {   
-                $(".checkbox").each(function() {
-                    this.checked = true
-                })
-            }
-            else 
+    $(function() 
+    {
+        /**
+         *    Sending ajax request
+        */
+        $.ajax
+        (
             {
-                $(".checkbox").each(function() {
-                    this.checked = false
-                })
+                type: "POST", 
+                url: "/test", 
+                data: { somefield: "Some field value", _token: "{{ csrf_token() }}"},
+
+                success: function(response) 
+                {
+                    console.log(response)
+                }
             }
-        })
+        )
+
+        $("[name='search']").keyup
+        (
+            function(event) 
+            {
+                console.log($(this).val())
+            }
+        )
     })
+
 </script>
 </html>
