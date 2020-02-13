@@ -21,6 +21,7 @@ Route::get('/', function () {
 
 Route::get('/domains/import', 'DomainController@import');
 
+Route::get('/testrequest', 'OptionController@testRequest');
 Route::post('/test', 'OptionController@test');
 
 Route::post('/domains/import/settings', 'DomainController@settings');
@@ -28,5 +29,5 @@ Route::get('/domains/search', 'DomainController@search');
 
 Route::resources([
     'domains' => 'DomainController',
-    'options' => 'OptionController'
+    // 'options' => 'OptionController'
 ]);

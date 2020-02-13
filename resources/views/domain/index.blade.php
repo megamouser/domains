@@ -45,10 +45,6 @@
     {{ $domains->links() }}
 </div>
 
-<br>
-
-<br>
-
 <div>
     <a href="domains/create">create</a>
 </div>
