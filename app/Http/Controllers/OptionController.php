@@ -21,6 +21,13 @@ class OptionController extends Controller
         dd($client);
     }
 
+    public function showAll()
+    {
+        $keyword = "da";
+        $options = DB::table("options")->where("json_params", "like", "%null%")->get();
+        dd($options);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -39,7 +46,20 @@ class OptionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $domainNameFromRequest = $request->domainName;
+        $domainAttributes = Domain::where("name", $domainNameFromRequest)->get()->first()->getAttributes();
+        $option = new Option;
+        $option->domain_id = $domainAttributes["id"];
+        $option->domain_name = $domainAttributes["name"];
+        $option->resource_name = "seo_rank_api2";
+
+        $client = new Client();
+        $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $option->domain_name);
+        $jsonParams = json_encode(json_decode($response->getBody()));
+        $option->json_params = $jsonParams;
+        $option->save();
+
+        return $option->getAttributes();
     }
 
     /**
@@ -85,29 +105,5 @@ class OptionController extends Controller
     public function destroy(Option $option)
     {
         //
-    }
-
-    public function test(Request $request)
-    {
-        return response()->json(['message' => 'My response from option controller'], 200);
-    }
-
-    public function testrequest()
-    {
-        $search = '.com';
-        $domains = DB::table('domains')->where('name', 'like', '%' . $search . '%')->get();
-        foreach ($domains as $key => $domain) 
-        {
-            $client = new Client();
-            $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/61AA6620697F14072F72AA47479EC328/' . $domain->name);
-            $statisticOption = json_encode(json_decode($response->getBody()));
-            
-            $option = new Option;
-            $option->domain_id = $domain->id;
-            $option->name = "seo_rank_api2";
-            $option->params = $statisticOption;
-            dump($option);
-            $option->save();
-        }
     }
 }

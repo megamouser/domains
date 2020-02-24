@@ -16,8 +16,9 @@ class CreateOptionsTable extends Migration
         Schema::create('options', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('domain_id');
-            $table->string('name');
-            $table->string('params');
+            $table->string('domain_name');
+            $table->string('resource_name');
+            $table->json('json_params');
             $table->timestamps();
         });
     }
