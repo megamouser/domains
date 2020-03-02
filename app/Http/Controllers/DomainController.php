@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain;
+use \App\Option;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use DB;
@@ -14,7 +15,7 @@ class DomainController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+    */
     public function index()
     {
         $domain = Domain::first();
@@ -134,8 +135,35 @@ class DomainController extends Controller
     public function search(Request $request)
     {
         $search = $request->get('search');
-        $domains = Domain::query()->where("name", "LIKE", "%{$search}%")->paginate(10000)->appends(request()->query());
+        $domains = Domain::query()->where("name", "LIKE", "%{$search}%")->paginate(1000)->appends(request()->query());
         return view('domain/index', compact('domains', 'search', 'domainsCount'));
+    }
+
+    public function getOptions($id)
+    {   
+        $domains = DB::table("domains")->get();
+        $options = DB::table("options")->get();
+        $domainsNames = collect([]);
+        $optionsDomainNames = collect([]);
+
+        foreach ($domains as $key => $domain) 
+        {
+            $domainsNames->push($domain->name);
+        }
+
+        foreach ($options as $key => $option)
+        {
+            $optionsDomainNames->push($option->domain_name);
+        }
+
+        $domainsNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+        $domains = $domainsNamesWithoutOptions->chunk(300)[$id];
+        foreach ($domains as $key => $domain) 
+        {
+            echo "<div data-domain='$domain' class='update_statistic'>" . $domain . "</div>";
+        }
+
+        return view("domain/getoptions");
     }
 
     private function validateRequest()

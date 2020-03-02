@@ -62,7 +62,7 @@
 
                 success: function(response) 
                 {
-                    console.log(response)
+                    console.log(response);
                 }
             }
         )
@@ -78,12 +78,6 @@
                 ajaxRequest("POST", "/options", { "domainName": domainName, "_token": "{{ csrf_token() }}" })
             }) 
         } 
-    }
-
-    function sleep(delay) 
-    {
-        var start = new Date().getTime();
-        while (new Date().getTime() < start + delay);
     }
 </script>
 </html>
