@@ -29,9 +29,5 @@
     <div>
         Statistics Params
     </div>
-
-    <div>
-        
-    </div>
 </div>
 @endsection

@@ -1,79 +1,75 @@
 @extends('main')
 @section('content')
-<div class="container">
-    @include('parts/navigation')
+<div class="container-fluid bg-dark">
+    <div class="container">
+        @include('parts/navigation')
+    </div>
 </div>
 
-<div class="container">
-    Domains search
-</div>
+<div class="container-fluid">
+    <div class="container">
+        <span style="color: white;">Domains search</span>
+    </div>
 
-<div class="container">
-    <form action="/domains/search" method="get">
-        <div>
-            <input name="search" type="search" value="{{ $search }}" placeholder="searching domain name">
+    <div class="container">
+        <div class="row">
+            <form class="form-inline" action="/domains/search" method="get">
+                <input class="form-control m-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="search by domain name">
+                <button class="btn btn-outline-dark m-2">search</button>
+            </form>
         </div>
+    </div>
 
-        <br>
+    {{-- 
+        <div class="container">
+            <div class="row">
+                <form class="form-inline" action="/domains/getDomains" method="post">
+                    @csrf
+                    <input class="form-control m-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="search by domain name">
+                    <button class="btn btn-outline-dark m-2">search</button>
+                </form>
+            </div>
+        </div> 
+    --}}
 
-        <div>
-            <button type="submit">search</button>
-        </div>
-
-    </form>
+    <div class="container domainsTable">
+        
+    </div>
 </div>
 
 <br>
 
-<div class="container">
-    <table class="table table-bordered table-dark">
+
+{{-- <div class="container">
+    <table class="table table-dark table-striped rounded">
         <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
-                <th scope="col">Statistics</th>
+                <th scope="col">Created</th>
             </tr>
         </thead>
         <tbody>
-            <form method="post" action="/options">
-                @csrf
-                <input type="submit">
-            </form>
             @foreach($domains as $domain)
                 <tr>
                     <th scope="row">{{ $domain->id }}</th>
-                    <td><a href="/domains/{{ $domain->id }}">{{ $domain->name }}</a></td>
-                    <td>
-                        @if($domain->options()->get()->isNotEmpty())
-                            <div data-domain="{{ $domain->name }}" style="color: green; font-weight: bolder;">
-                                Success
-                            </div>
-                        @else
-                            <div class="row">
-                                <div class="col" style="color: red; font-weight: bolder;">
-                                    Statistic data is not found
-                                </div>  
-                                <div data-domain="{{ $domain->name }}" style="cursor: pointer" class="col update_statistic">
-                                    Get statistic data
-                                </div>
-                            </div>
-                        @endif
-                    </td>
+                    <td scope="row"><a href="/domains/{{ $domain->id }}">{{ $domain->name }}</a></td>
+                    <td scope="row">{{ $domain->created_at }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-</div>
+</div> --}}
 
-<div class="container">
+{{-- <div class="container-fluid">
     {{ $domains->links() }}
-</div>
+</div> --}}
 
-<div class="container">
+{{-- <div class="container">
     <a href="domains/create">create</a>
 </div>
 
 <div class="container">
     <a href="domains/import">import</a>
-</div>
+</div> --}}
 @endsection

@@ -1,8 +1,6 @@
 @extends('main')
 @section('content')
-<div class="container">
-    @include("parts/navigation")
-</div>
+@include("parts/navigation")
 <div class="container">
     Homepage
 </div>

@@ -21,6 +21,8 @@ Route::get('/', function ()
     return view('home');
 });
 
+Route::post('/domains/getDomains', 'DomainController@getDomains');
+Route::get('/domains/listing', 'DomainController@listing');
 Route::get('/domains/import', 'DomainController@import');
 Route::post('/domains/import/settings', 'DomainController@settings');
 Route::get('/domains/search', 'DomainController@search');

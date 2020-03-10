@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use DB;
 
+use function GuzzleHttp\json_decode;
 
 class DomainController extends Controller
 {
@@ -18,10 +19,39 @@ class DomainController extends Controller
     */
     public function index()
     {
-        $domain = Domain::first();
-        $domains = Domain::paginate(15);
+        
+        $domains = DB::table("domains")->get()->chunk(10)->get(0);
+        // dd(DB::table("domains")->get()->chunk(10)->get(21197));
+        // dd(DB::table("domains")->get()->chunk(10)->count());
         $search = '';
         return view('domain/index', compact('domains', 'search'));
+    }
+
+    public function getDomains()
+    {
+        $itemsOnPage = request()->itemsOnPage;
+        $pageNumber = request()->pageNumber;
+        // $singleDomain = DB::table("domains")->first();
+        // $domainKeys = [];
+        
+        // foreach ($singleDomain as $key => $value) 
+        // {
+        //     $domainKeys[] = $key;
+        // }
+
+        $allDomains = DB::table("domains")->get();
+        $domainsChunkCount = $allDomains->chunk($itemsOnPage)->count();
+        $domainsChunk = $allDomains->chunk($itemsOnPage)->get($pageNumber)->values()->toArray();
+        $allDomainsCount = $allDomains->count();
+
+        return [
+                "itemsChunk" => $domainsChunk, 
+                "allItemsCount" => $allDomainsCount, 
+                "itemsInChunk" => $itemsOnPage, 
+                "chunkNumber" => $pageNumber, 
+                "chunksCount" => $domainsChunkCount,
+                // "domainKeys" => $domainKeys
+            ];
     }
 
     /**
@@ -31,7 +61,6 @@ class DomainController extends Controller
      */
     public function create()
     {
-        dump("Creating a new domain");
         return view('domain/create');
     }
 
@@ -124,12 +153,24 @@ class DomainController extends Controller
             foreach($strings as $key => $string) 
             {
                 $arr_data = str_getcsv($string);
-                $str_domainname = $arr_data[0];
+                $str_domain_name = $arr_data[0];
                 $domain = new Domain;
-                $domain->name = $str_domainname;
+                $domain->name = $str_domain_name;
                 $domain->save();
             }
         }
+    }
+
+    public function listing()
+    {
+        $search = "";
+        $options = DB::table("options")->where("domain_name", "LIKE", "%{$search}%")->paginate(1000)->appends(request()->query());
+        // foreach ($options as $key => $option) 
+        // {
+        //     dd(json_decode($option->json_params)->mozrank);
+        // }
+
+        return view("domain/listing", compact("search", "options"));
     }
 
     public function search(Request $request)
@@ -157,7 +198,7 @@ class DomainController extends Controller
         }
 
         $domainsNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-        $domains = $domainsNamesWithoutOptions->chunk(300)[$id];
+        $domains = $domainsNamesWithoutOptions->chunk(50)[$id];
         foreach ($domains as $key => $domain) 
         {
             echo "<div data-domain='$domain' class='update_statistic'>" . $domain . "</div>";
