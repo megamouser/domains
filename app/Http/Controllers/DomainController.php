@@ -29,29 +29,65 @@ class DomainController extends Controller
 
     public function getDomains()
     {
-        $itemsOnPage = request()->itemsOnPage;
-        $pageNumber = request()->pageNumber;
-        // $singleDomain = DB::table("domains")->first();
-        // $domainKeys = [];
+        $requestDataParams = request()->params;
         
-        // foreach ($singleDomain as $key => $value) 
-        // {
-        //     $domainKeys[] = $key;
-        // }
+        $searchString = null;
+        $itemsInOnePage = null;
+        $itemsPageNumber = null;
+        $itemsCount = null;
+        $items = null;
 
-        $allDomains = DB::table("domains")->get();
-        $domainsChunkCount = $allDomains->chunk($itemsOnPage)->count();
-        $domainsChunk = $allDomains->chunk($itemsOnPage)->get($pageNumber)->values()->toArray();
-        $allDomainsCount = $allDomains->count();
+        if($requestDataParams["search"]) 
+        {
+            $searchString = $requestDataParams["search"];
+            $itemsInOnePage = $requestDataParams["itemsInOnePage"];
+            $itemsPageNumber = $requestDataParams["itemsPageNumber"];
 
-        return [
-                "itemsChunk" => $domainsChunk, 
-                "allItemsCount" => $allDomainsCount, 
-                "itemsInChunk" => $itemsOnPage, 
-                "chunkNumber" => $pageNumber, 
-                "chunksCount" => $domainsChunkCount,
-                // "domainKeys" => $domainKeys
-            ];
+            $mainRequest = DB::table("domains")->where("name", "LIKE", "%{$searchString}%")->get();
+            $chunkedData = $mainRequest->chunk($itemsInOnePage);
+            $itemsCount = $mainRequest->count();
+            $pagesCount = $chunkedData->count();
+            $items = $chunkedData->get($itemsPageNumber);
+
+            return ["searchString" => $searchString, "itemsInOnePage" => $itemsInOnePage, "itemsPageNumber" => $itemsPageNumber, "itemsCount" => $itemsCount, "pagesCount" => $pagesCount, "items" => $items];
+        }
+        else 
+        {
+            $searchString = $requestDataParams["search"];
+            $itemsInOnePage = $requestDataParams["itemsInOnePage"];
+            $itemsPageNumber = $requestDataParams["itemsPageNumber"];
+
+            $mainRequest = DB::table("domains")->get();
+            $chunkedData = $mainRequest->chunk($itemsInOnePage);
+            $itemsCount = $mainRequest->count();
+            $pagesCount = $chunkedData->count();
+            $items = $chunkedData->get($itemsPageNumber);
+
+            return ["searchString" => $searchString, "itemsInOnePage" => $itemsInOnePage, "itemsPageNumber" => $itemsPageNumber, "itemsCount" => $itemsCount, "pagesCount" => $pagesCount, "items" => $items];
+        }
+        // $itemsOnPage = request()->itemsOnPage;
+        // $pageNumber = request()->pageNumber;
+        // // $singleDomain = DB::table("domains")->first();
+        // // $domainKeys = [];
+        
+        // // foreach ($singleDomain as $key => $value) 
+        // // {
+        // //     $domainKeys[] = $key;
+        // // }
+
+        // $allDomains = DB::table("domains")->get();
+        // $domainsChunkCount = $allDomains->chunk($itemsOnPage)->count();
+        // $domainsChunk = $allDomains->chunk($itemsOnPage)->get($pageNumber)->values()->toArray();
+        // $allDomainsCount = $allDomains->count();
+
+        // return [
+        //         "itemsChunk" => $domainsChunk, 
+        //         "allItemsCount" => $allDomainsCount, 
+        //         "itemsInChunk" => $itemsOnPage, 
+        //         "chunkNumber" => $pageNumber, 
+        //         "chunksCount" => $domainsChunkCount,
+        //         // "domainKeys" => $domainKeys
+        //     ];
     }
 
     /**

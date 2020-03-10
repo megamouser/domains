@@ -91,154 +91,203 @@
     //     )
     // }
 
-        class DomainsTable 
+        class RequestMaker 
         {
-            constructor(itemsOnPage, itemsPage)
-            {
-                this.loadingSpinner = 
-                    `<div class="row justify-content-center mt-5">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>`;
+            // constructor(params = {})
+            // {
+            //     this.params = params;
+            //     // this.loadingSpinner = 
+            //     //     `<div class="row justify-content-center mt-5">
+            //     //         <div class="spinner-border" role="status">
+            //     //             <span class="sr-only">Loading...</span>
+            //     //         </div>
+            //     //     </div>`;
                 
-                this.domainsTablePlace = $(".domainsTable");
-                this.itemsOnPage = itemsOnPage;
-                this.itemsPage = itemsPage;
+            //     // this.domainsTablePlace = $(".domainsTable");
+            //     // this.itemsOnPage = itemsOnPage;
+            //     // this.itemsPage = itemsPage;
+            //     // this.columns = columns;
 
-                this.getDataRequest(this.itemsOnPage, this.itemsPage);
-            }
+            //     // this.getDataRequest(this.itemsOnPage, this.itemsPage);
+            // }
 
-            loadSpinnerIntoTablePlace()
+
+            makeRequest(url)
             {
-                this.domainsTablePlace.html(this.loadingSpinner);
-            }
-
-            changeSettings(itemsOnPage = this.itemsOnPage, itemsPage = this.itemsPage)
-            {
-                this.itemsOnPage = itemsOnPage;
-                this.itemsPage = itemsPage;
-
-                this.getDataRequest(this.itemsOnPage, this.itemsPage);
-            }
-
-            getDataRequest(itemsOnPage, pageNumber)
-            {
-                this.loadSpinnerIntoTablePlace();
-
-                $.ajax 
+                $.ajax
                 (
                     {
                         type: "post",
-                        url: "/domains/getDomains",
-                        data: 
-                        {
-                            "itemsOnPage": itemsOnPage,
-                            "pageNumber": pageNumber, 
-                            "dataType": "application/json",
+                        url: url,
+                        data: {
+                            "params": this.params,
                             "_token": "{{ csrf_token() }}"
                         }
                     }
                 ).done((data) => 
-                { 
-                    this.data = data;
-
-                    if(this.data) 
-                    {
-                        this.loadTableMain(data);
-                        this.loadTableContent(data);
-                        this.loadNavigation(data);
-                    }
+                {
+                    console.log(data);
                 })
             }
 
-            loadTableMain(response) 
+            setParams(params = {})
             {
-                let domainsTable = $(".domainsTable");
-                domainsTable.html("");
-                domainsTable.html
-                (`<table class="table table-dark table-striped rounded">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Created</th>
-                        </tr>
-                    </thead>
-                    <tbody class='domainsTableBody'></tbody>
-                </table>
-                <nav>
-                    <ul class="pagination">
-                        <li class="page-item previous">
-                            <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                        </li>
-                        <div class="page-item">
-                            <div class="page-link"><span class="pageNumberStart">` + ++response.chunkNumber + `</span> / <span class="pageNumberStop">` + response.chunksCount + `</span></div>
-                        </div>
-                        <li class="page-item next">
-                            <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>`);
+                this.params = params;
             }
 
-            loadTableContent(data)
-            {
-                let domainsTableBody = $(".domainsTableBody");
-                let domainsTableBodyContent = "";
-                domainsTableBody.html("");
+            // loadSpinnerIntoTablePlace()
+            // {
+            //     this.domainsTablePlace.html(this.loadingSpinner);
+            // }
 
-                data.itemsChunk.forEach(element => 
-                {
-                    domainsTableBodyContent += 
-                    `<tr>
-                        <th scope="row">` + element.id + `</th>
-                        <td><a href="/domains/` + element.id + `">` + element.name + `</a></td>
-                        <td scope="row">` + element.created_at + `</td>
-                    </tr>`;
-                });
+            // updateDataRequest(itemsOnPage = this.itemsOnPage, itemsPage = this.itemsPage)
+            // {
+            //     this.itemsOnPage = itemsOnPage;
+            //     this.itemsPage = itemsPage;
 
-                domainsTableBody.html(domainsTableBodyContent);
-            }
+            //     this.getDataRequest(this.itemsOnPage, this.itemsPage);
+            // }
 
-            loadNavigation(data)
-            {
-                this.maxPageCount = data.chunksCount;
-                if(this.itemsPage > 0)
-                {
-                    $(".previous").click((event) => 
-                    {
-                        event.preventDefault();
-                        this.changeSettings(this.itemsOnPage, this.itemsPage - 1);
-                    });
-                }
-                else
-                {
-                    $(".previous").addClass("disabled");
-                }
+            // getDataRequest(itemsOnPage, pageNumber)
+            // {
+            //     this.loadSpinnerIntoTablePlace();
 
-                if(this.itemsPage < this.maxPageCount - 1)
-                {
-                    $(".next").click((event) => 
-                    {   
-                        event.preventDefault();
-                        this.changeSettings(this.itemsOnPage, this.itemsPage + 1);
-                    });
-                } 
-                else 
-                {
-                    $(".next").addClass("disabled");
-                }
-            }
+            //     $.ajax 
+            //     (
+            //         {
+            //             type: "post",
+            //             url: "/domains/getDomains",
+            //             data: 
+            //             {
+            //                 "itemsOnPage": itemsOnPage,
+            //                 "pageNumber": pageNumber, 
+            //                 "dataType": "application/json",
+            //                 "_token": "{{ csrf_token() }}"
+            //             }
+            //         }
+            //     ).done((data) => 
+            //     { 
+            //         this.data = data;
+            //         this.data.keys = Object.keys(this.data.itemsChunk[0]);
+
+            //         if(this.data) 
+            //         {
+            //             this.loadTableMain(this.data);
+            //             this.loadTableContent(this.data);
+            //             this.loadNavigation(this.data);
+
+            //         }
+            //     })
+            // }
+
+            // loadTableMain(response) 
+            // {
+            //     let columnsString = "";
+                
+            //     for (let [key, value] of Object.entries(this.columns)) 
+            //     {
+            //         columnsString += `<th scope="col">` + value + `</th>`; 
+            //     }
+
+            //     let domainsTable = $(".domainsTable");
+            //     domainsTable.html("");
+            //     domainsTable.html
+            //     (`<table class="table table-bordered table-striped rounded">
+            //         <thead>
+            //             <tr>` + columnsString + `</tr>
+            //         </thead>
+            //         <tbody class='domainsTableBody'></tbody>
+            //     </table>
+            //     <nav>
+            //         <ul class="pagination">
+            //             <li class="page-item previous">
+            //                 <a class="page-link" href="#" aria-label="Previous">
+            //                     <span aria-hidden="true">&laquo;</span>
+            //                     <span class="sr-only">Previous</span>
+            //                 </a>
+            //             </li>
+            //             <div class="page-item">
+            //                 <div class="page-link"><span class="pageNumberStart">` + ++response.chunkNumber + `</span> / <span class="pageNumberStop">` + response.chunksCount + `</span></div>
+            //             </div>
+            //             <li class="page-item next">
+            //                 <a class="page-link" href="#" aria-label="Next">
+            //                     <span aria-hidden="true">&raquo;</span>
+            //                     <span class="sr-only">Next</span>
+            //                 </a>
+            //             </li>
+            //         </ul>
+            //     </nav>`);
+            // }
+
+            // loadTableContent(data)
+            // {
+            //     let domainsTableBody = $(".domainsTableBody");
+            //     let domainsTableBodyContent = "";
+            //     domainsTableBody.html("");
+
+            //     data.itemsChunk.forEach(element => 
+            //     {
+            //         domainsTableBodyContent += 
+            //         `<tr>
+            //             <th scope="row">` + element.id + `</th>
+            //             <td><a href="/domains/` + element.id + `">` + element.name + `</a></td>
+            //             <td scope="row">` + element.created_at + `</td>
+            //         </tr>`;
+            //     });
+
+            //     domainsTableBody.html(domainsTableBodyContent);
+            // }
+
+            // loadNavigation(data)
+            // {
+            //     this.maxPageCount = data.chunksCount;
+            //     if(this.itemsPage > 0)
+            //     {
+            //         $(".previous").click((event) => 
+            //         {
+            //             event.preventDefault();
+            //             this.changeSettings(this.itemsOnPage, this.itemsPage - 1);
+            //         });
+            //     }
+            //     else
+            //     {
+            //         $(".previous").addClass("disabled");
+            //     }
+
+            //     if(this.itemsPage < this.maxPageCount - 1)
+            //     {
+            //         $(".next").click((event) => 
+            //         {   
+            //             event.preventDefault();
+            //             this.changeSettings(this.itemsOnPage, this.itemsPage + 1);
+            //         });
+            //     } 
+            //     else 
+            //     {
+            //         $(".next").addClass("disabled");
+            //     }
+            // }
         }
 
-        let domainsTable = new DomainsTable(10000, 0);
+        // requestMaker.setParams({itemsInOnePage: 150, itemsPageNumber: 0, search: "" });
+        // requestMaker.makeRequest("/domains/getDomains");
+        // requestMaker.setParams({itemsInOnePage: 150, itemsPageNumber: 2, search: "t" });
+        // requestMaker.makeRequest("/domains/getDomains");
+        
+        let requestMaker = new RequestMaker;
+        let searchInput = $("input[name=search]");
+        let countItemsInput = $("input[name=itemsCount]");
+        let countPagesInput = $("input[name=pageCount]");
+
+        searchInput.on('keyup change', function(event) 
+        {
+            console.log(this.value);
+        })        
+        
+        countItemsInput.on('keyup change', function(event) 
+        {
+            console.log(this.value);
+        })
 
         // function getDomains(itemsOnPage, pageNumber)
         // {

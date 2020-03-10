@@ -12,28 +12,26 @@
     </div>
 
     <div class="container">
+        <div class="col-md-5">
+            <input class="form-control m-2" aria-label="search" name="search" type="search" placeholder="Поиск домена по имени">
+        </div>
+        <div class="col-md-3">
+            <input class="form-control m-2" aria-label="count" name="itemsCount" type="number" placeholder="Кол-во на одной странице">
+        </div>
+    </div>
+</div>
+
+    <!-- <div class="container">
         <div class="row">
-            <form class="form-inline" action="/domains/search" method="get">
+            <form class="form-inline" action="/domains/getDomains" method="post">
+                @csrf
                 <input class="form-control m-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="search by domain name">
                 <button class="btn btn-outline-dark m-2">search</button>
             </form>
         </div>
-    </div>
-
-    {{-- 
-        <div class="container">
-            <div class="row">
-                <form class="form-inline" action="/domains/getDomains" method="post">
-                    @csrf
-                    <input class="form-control m-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="search by domain name">
-                    <button class="btn btn-outline-dark m-2">search</button>
-                </form>
-            </div>
-        </div> 
-    --}}
+    </div>  -->
 
     <div class="container domainsTable">
-        
     </div>
 </div>
 
