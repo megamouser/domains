@@ -18,7 +18,7 @@
             <a class="nav-link" href="/domains">Домены</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Статистика</a>
+            <a class="nav-link" href="/options">Опции</a>
           </li> 
           <!-- <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>

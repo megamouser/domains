@@ -16,21 +16,19 @@ Route::get("phpinfo", function()
     phpinfo();
 });
 
-Route::get('/', function ()
-{
-    return view('home');
-});
-
-Route::post('/domains/getDomains', 'DomainController@getDomains');
-Route::get('/domains/listing', 'DomainController@listing');
+// Route::post('/domains/getDomains', 'DomainController@getDomains');
+// Route::get('/domains/listing', 'DomainController@listing');
 Route::get('/domains/import', 'DomainController@import');
 Route::post('/domains/import/settings', 'DomainController@settings');
-Route::get('/domains/search', 'DomainController@search');
-Route::get('/domains/get-options/{id}', 'DomainController@getOptions');
-Route::post('/domains/get-options', 'DomainController@getOptions');
+// Route::get('/domains/search', 'DomainController@search');
+// Route::get('/domains/get-options/{id}', 'DomainController@getOptions');
+// Route::post('/domains/get-options', 'DomainController@getOptions');
 
 Route::get('options/showall', 'OptionController@showAll');
 Route::resources([
     'domains' => 'DomainController',
     'options' => 'OptionController'
 ]);
+Auth::routes();
+
+Route::get('/', 'HomeController@index')->name('home');

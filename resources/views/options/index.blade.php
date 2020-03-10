@@ -12,9 +12,9 @@
     <table class="table table-bordered table-striped rounded">
         <thead>
             <tr>
-                <th colspan="3">
+                <th colspan="5">
                     <div class="container">
-                        <form class="form-inline my-2 my-lg-0" action="/domains" method="get">
+                        <form class="form-inline my-2 my-lg-0" action="/options" method="get">
                             <input class="form-control mr-sm-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Полнотекстовый поиск">
                             <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">поиск</button>
                         </form>
@@ -23,16 +23,20 @@
             </tr>
             <tr>
                 <th scope="col">ID</th>
-                <th scope="col">Имя</th>
-                <th scope="col">Дата создания</th>
+                <th scope="col">Имя домена</th>
+                <th scope="col">DA</th>
+                <th scope="col">PA</th>
+                <th scope="col">MOZ</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($domains as $domain)
+            @foreach($options as $option)
                 <tr>
-                    <th scope="row">{{ $domain->id }}</th>
-                    <td><a href="/domains/{{ $domain->id }}">{{ $domain->name }}</a></td>
-                    <td>{{ $domain->created_at }}</td>
+                    <th scope="row">{{ $option->id }}</th>
+                    <td>{{ $option->domain_name }}</td>
+                    <td>{{ json_decode($option->json_params)->da }}</td>
+                    <td>{{ json_decode($option->json_params)->pa }}</td>
+                    <td>{{ json_decode($option->json_params)->mozrank }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -40,14 +44,14 @@
 </div>
 
 <div class="container-fluid">
-    {{ $domains->links() }}
+    {{ $options->links() }}
 </div>
 
 <div class="container">
-    <a href="domains/create">Создать домен</a>
+    <a href="domains/create">create</a>
 </div>
 
 <div class="container">
-    <a href="domains/import">Импортировать домены из csv</a>
+    <a href="domains/import">import</a>
 </div>
 @endsection

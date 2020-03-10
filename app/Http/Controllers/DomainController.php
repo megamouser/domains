@@ -19,75 +19,20 @@ class DomainController extends Controller
     */
     public function index()
     {
-        
-        $domains = DB::table("domains")->get()->chunk(10)->get(0);
-        // dd(DB::table("domains")->get()->chunk(10)->get(21197));
-        // dd(DB::table("domains")->get()->chunk(10)->count());
-        $search = '';
-        return view('domain/index', compact('domains', 'search'));
-    }
+        $domains = null;
+        $search = "";
 
-    public function getDomains()
-    {
-        $requestDataParams = request()->params;
-        
-        $searchString = null;
-        $itemsInOnePage = null;
-        $itemsPageNumber = null;
-        $itemsCount = null;
-        $items = null;
-
-        if($requestDataParams["search"]) 
+        if(request()->search)
         {
-            $searchString = $requestDataParams["search"];
-            $itemsInOnePage = $requestDataParams["itemsInOnePage"];
-            $itemsPageNumber = $requestDataParams["itemsPageNumber"];
-
-            $mainRequest = DB::table("domains")->where("name", "LIKE", "%{$searchString}%")->get();
-            $chunkedData = $mainRequest->chunk($itemsInOnePage);
-            $itemsCount = $mainRequest->count();
-            $pagesCount = $chunkedData->count();
-            $items = $chunkedData->get($itemsPageNumber);
-
-            return ["searchString" => $searchString, "itemsInOnePage" => $itemsInOnePage, "itemsPageNumber" => $itemsPageNumber, "itemsCount" => $itemsCount, "pagesCount" => $pagesCount, "items" => $items];
+            $search = request()->search;
+            $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->paginate(10)->appends(request()->query());
         }
-        else 
+        else
         {
-            $searchString = $requestDataParams["search"];
-            $itemsInOnePage = $requestDataParams["itemsInOnePage"];
-            $itemsPageNumber = $requestDataParams["itemsPageNumber"];
-
-            $mainRequest = DB::table("domains")->get();
-            $chunkedData = $mainRequest->chunk($itemsInOnePage);
-            $itemsCount = $mainRequest->count();
-            $pagesCount = $chunkedData->count();
-            $items = $chunkedData->get($itemsPageNumber);
-
-            return ["searchString" => $searchString, "itemsInOnePage" => $itemsInOnePage, "itemsPageNumber" => $itemsPageNumber, "itemsCount" => $itemsCount, "pagesCount" => $pagesCount, "items" => $items];
+            $domains = DB::table("domains")->paginate(10);
         }
-        // $itemsOnPage = request()->itemsOnPage;
-        // $pageNumber = request()->pageNumber;
-        // // $singleDomain = DB::table("domains")->first();
-        // // $domainKeys = [];
-        
-        // // foreach ($singleDomain as $key => $value) 
-        // // {
-        // //     $domainKeys[] = $key;
-        // // }
 
-        // $allDomains = DB::table("domains")->get();
-        // $domainsChunkCount = $allDomains->chunk($itemsOnPage)->count();
-        // $domainsChunk = $allDomains->chunk($itemsOnPage)->get($pageNumber)->values()->toArray();
-        // $allDomainsCount = $allDomains->count();
-
-        // return [
-        //         "itemsChunk" => $domainsChunk, 
-        //         "allItemsCount" => $allDomainsCount, 
-        //         "itemsInChunk" => $itemsOnPage, 
-        //         "chunkNumber" => $pageNumber, 
-        //         "chunksCount" => $domainsChunkCount,
-        //         // "domainKeys" => $domainKeys
-        //     ];
+        return view("domain/index", compact("domains", "search"));
     }
 
     /**
@@ -124,13 +69,11 @@ class DomainController extends Controller
 
         if($optionCount) 
         {
-            dump($domain->options);
             return view('domain/show', compact('domain'));
 
         } 
         else 
         {
-            dump("Опции не обнаружены");
             return view('domain/show', compact('domain'));
         }
     }
@@ -197,51 +140,32 @@ class DomainController extends Controller
         }
     }
 
-    public function listing()
-    {
-        $search = "";
-        $options = DB::table("options")->where("domain_name", "LIKE", "%{$search}%")->paginate(1000)->appends(request()->query());
-        // foreach ($options as $key => $option) 
-        // {
-        //     dd(json_decode($option->json_params)->mozrank);
-        // }
+    // public function getOptions($id)
+    // {   
+    //     $domains = DB::table("domains")->get();
+    //     $options = DB::table("options")->get();
+    //     $domainsNames = collect([]);
+    //     $optionsDomainNames = collect([]);
 
-        return view("domain/listing", compact("search", "options"));
-    }
+    //     foreach ($domains as $key => $domain) 
+    //     {
+    //         $domainsNames->push($domain->name);
+    //     }
 
-    public function search(Request $request)
-    {
-        $search = $request->get('search');
-        $domains = Domain::query()->where("name", "LIKE", "%{$search}%")->paginate(1000)->appends(request()->query());
-        return view('domain/index', compact('domains', 'search', 'domainsCount'));
-    }
+    //     foreach ($options as $key => $option)
+    //     {
+    //         $optionsDomainNames->push($option->domain_name);
+    //     }
 
-    public function getOptions($id)
-    {   
-        $domains = DB::table("domains")->get();
-        $options = DB::table("options")->get();
-        $domainsNames = collect([]);
-        $optionsDomainNames = collect([]);
+    //     $domainsNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+    //     $domains = $domainsNamesWithoutOptions->chunk(50)[$id];
+    //     foreach ($domains as $key => $domain) 
+    //     {
+    //         echo "<div data-domain='$domain' class='update_statistic'>" . $domain . "</div>";
+    //     }
 
-        foreach ($domains as $key => $domain) 
-        {
-            $domainsNames->push($domain->name);
-        }
-
-        foreach ($options as $key => $option)
-        {
-            $optionsDomainNames->push($option->domain_name);
-        }
-
-        $domainsNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-        $domains = $domainsNamesWithoutOptions->chunk(50)[$id];
-        foreach ($domains as $key => $domain) 
-        {
-            echo "<div data-domain='$domain' class='update_statistic'>" . $domain . "</div>";
-        }
-
-        return view("domain/getoptions");
-    }
+    //     return view("domain/getoptions");
+    // }
 
     private function validateRequest()
     {

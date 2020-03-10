@@ -17,8 +17,20 @@ class OptionController extends Controller
      */
     public function index()
     {
-        $client = new Client;
-        dd($client);
+        $options = null;
+        $search = "";
+
+        if(request()->search)
+        {
+            $search = request()->search;
+            $options = DB::table("options")->where("domain_name", "LIKE", "%{$search}%")->paginate(10)->appends(request()->query());
+        }
+        else
+        {
+            $options = DB::table("options")->paginate(10);
+        }
+
+        return view("options/index", compact("options", "search"));
     }
 
     public function showAll()
