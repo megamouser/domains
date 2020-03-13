@@ -1,12 +1,15 @@
 @extends('main')
 @section('content')
-<div>
-    @include('parts/navigation')
-</div>
-<div>
-    Domains / Edit
-</div>
+@include('parts/navigation')
+
 <br>
+
+<div class="container-fluid">
+    <div class="container">
+        <h1>Редактировать домен</h1>
+    </div>
+</div>
+
 <div>
     <form action="/domains/{{ $domain->id }}" method="POST" enctype="mutlipart/form-data">
         @method('PATCH')

@@ -10,6 +10,11 @@ use DB;
 
 class OptionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -19,24 +24,36 @@ class OptionController extends Controller
     {
         $options = null;
         $search = "";
+        $options = DB::table("options");
 
-        if(request()->search)
+        $queryParams = collect(request()->query());
+
+        if($queryParams->has("search"))
         {
-            $search = request()->search;
-            $options = DB::table("options")->where("domain_name", "LIKE", "%{$search}%")->paginate(10)->appends(request()->query());
-        }
-        else
-        {
-            $options = DB::table("options")->paginate(10);
+            $search = $queryParams->get("search");
+            $options = $options->where("domain_name", "LIKE", "%{$search}%");
         }
 
+        if($queryParams->has("sort"))
+        {
+            $sortParam = $queryParams->get("sort");
+
+            if($sortParam == "id" || $sortParam == "domain_name")
+            {
+                $options = $options->orderBy($sortParam, "asc");
+            } else if($sortParam == "da" || $sortParam == "pa" || $sortParam == "mozrank")
+            {
+                $options = DB::table("options")->whereJsonContains("json_params", ["mozrank" => 1.1]);
+            }
+        }
+
+        $options = $options->paginate(10)->appends(request()->query());
         return view("options/index", compact("options", "search"));
     }
 
     public function showAll()
     {
-        $keyword = "da";
-        $options = DB::table("options")->where("json_params", "like", "%null%")->get();
+        $options = DB::table("options")->first();
         dd($options);
     }
 

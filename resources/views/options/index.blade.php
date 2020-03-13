@@ -22,18 +22,38 @@
                 </th>
             </tr>
             <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Имя домена</th>
-                <th scope="col">DA</th>
-                <th scope="col">PA</th>
-                <th scope="col">MOZ</th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'id']) }}">
+                        ID
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'domain_name']) }}">
+                        Имя домена
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'da']) }}">
+                        DA
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'pa']) }}">
+                        PA
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'mozrank']) }}">
+                        MOZ
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach($options as $option)
                 <tr>
                     <th scope="row">{{ $option->id }}</th>
-                    <td>{{ $option->domain_name }}</td>
+                    <td><a href="/domains/{{ $option->domain_id }}">{{ $option->domain_name }}</a></td>
                     <td>{{ json_decode($option->json_params)->da }}</td>
                     <td>{{ json_decode($option->json_params)->pa }}</td>
                     <td>{{ json_decode($option->json_params)->mozrank }}</td>
@@ -45,13 +65,5 @@
 
 <div class="container-fluid">
     {{ $options->links() }}
-</div>
-
-<div class="container">
-    <a href="domains/create">create</a>
-</div>
-
-<div class="container">
-    <a href="domains/import">import</a>
 </div>
 @endsection

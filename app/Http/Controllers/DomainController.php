@@ -12,6 +12,11 @@ use function GuzzleHttp\json_decode;
 
 class DomainController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -21,17 +26,23 @@ class DomainController extends Controller
     {
         $domains = null;
         $search = "";
+        $domains = DB::table("domains");
 
-        if(request()->search)
+        $queryParams = collect(request()->query());
+
+        if($queryParams->has("search"))
         {
-            $search = request()->search;
-            $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->paginate(10)->appends(request()->query());
-        }
-        else
-        {
-            $domains = DB::table("domains")->paginate(10);
+            $search = $queryParams->get("search");
+            $domains = $domains->where("name", "LIKE", "%{$search}%");
         }
 
+        if($queryParams->has("sort"))
+        {
+            $sort = $queryParams->get("sort");
+            $domains = $domains->orderBy($sort, "asc");
+        }
+
+        $domains = $domains->paginate(10)->appends(request()->query());
         return view("domain/index", compact("domains", "search"));
     }
 
@@ -69,8 +80,15 @@ class DomainController extends Controller
 
         if($optionCount) 
         {
-            return view('domain/show', compact('domain'));
+            $options = $domain->options()->get()->toArray();
+            $options = $options[0]["json_params"];
+            $options = json_decode($options);
 
+            $da = $options->da;
+            $pa = $options->pa;
+            $mozrank = $options->mozrank;
+
+            return view('domain/show', compact('domain', 'da', 'pa', 'mozrank'));
         } 
         else 
         {

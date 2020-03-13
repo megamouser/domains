@@ -1,10 +1,7 @@
 @extends('main')
 @section('content')
-<div class="container-fluid bg-dark">
-    <div class="container">
-        @include('parts/navigation')
-    </div>
-</div>
+
+@include('parts/navigation')
 
 <br>
 
@@ -22,9 +19,21 @@
                 </th>
             </tr>
             <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Имя</th>
-                <th scope="col">Дата создания</th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'id']) }}">
+                        ID
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'name']) }}">
+                        Имя
+                    </a>
+                </th>
+                <th scope="col">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'created_at']) }}">
+                        Создан
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>

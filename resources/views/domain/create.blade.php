@@ -1,29 +1,29 @@
 @extends('main')
 @section('content')
-<div>
-    @include('parts/navigation')
-</div>
-<div>
-    Domains / Create
-</div>
+@include('parts/navigation')
+
 <br>
-<div>
-    <form action="/domains" method="POST" enctype="mutlipart/form-data">
-        @csrf
 
-        <div>
-            <input type="text" placeholder="name" name="name" value="{{ old('name') }}">
+<div class="container-fluid">
+    <div class="container">
+        <h1>Создать домен</h1>
+    </div>
+</div>
+
+<br>
+
+<div class="container-fluid">
+    <div class="container">
+        <form class="form-inline my-2 my-lg-0" action="/domains" method="POST" enctype="mutlipart/form-data">
+            @csrf
+
+            <input class="form-control mr-sm-2" type="text" placeholder="Имя домена" name="name" value="{{ old('name') }}">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Сохранить</button>
+        </form>
+
+        <div class="container">
+            <span style="color: red; font-weight: bolder;">{{ $errors->first('name') }}</span>
         </div>
-
-        <br>
-
-        <div>
-            <button type="submit">save</button>
-        </div>
-    </form>
-
-    <div>
-        {{ $errors->first('name') }}
     </div>
 </div>
 @endsection
