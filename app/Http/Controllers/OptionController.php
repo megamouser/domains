@@ -43,7 +43,7 @@ class OptionController extends Controller
                 $options = $options->orderBy($sortParam, "asc");
             } else if($sortParam == "da" || $sortParam == "pa" || $sortParam == "mozrank")
             {
-                $options = DB::table("options")->whereJsonContains("json_params", ["mozrank" => 1.1]);
+                $options = $options->select("SELECT id, domain_id, domain_name, resource_name, JSON_EXTRACT(json_params, '$.mozrank') AS mozrank FROM options ORDER BY mozrank")->get();
             }
         }
 

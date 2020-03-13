@@ -33,7 +33,8 @@
         .page-link
         {
             color: #343a40;
-        } */
+        } 
+        */
     </style>
 </head>
 <body>
