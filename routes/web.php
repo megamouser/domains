@@ -26,7 +26,8 @@ Route::post('/domains/import/settings', 'DomainController@settings');
 Route::get('options/showall', 'OptionController@showAll');
 Route::resources([
     'domains' => 'DomainController',
-    'options' => 'OptionController'
+    'options' => 'OptionController',
+    'statistic' => 'StatisticController'
 ]);
 Auth::routes();
 
