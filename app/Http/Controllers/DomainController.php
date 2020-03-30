@@ -7,6 +7,7 @@ use \App\Option;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use DB;
+use GuzzleHttp\Client;
 
 use function GuzzleHttp\json_decode;
 
@@ -14,7 +15,7 @@ class DomainController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');~
     }
     
     /**
@@ -75,25 +76,8 @@ class DomainController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Domain $domain)
-    {
-        $optionCount = count($domain->options);
-
-        if($optionCount) 
-        {
-            $options = $domain->options()->get()->toArray();
-            $options = $options[0]["json_params"];
-            $options = json_decode($options);
-
-            $da = $options->da;
-            $pa = $options->pa;
-            $mozrank = $options->mozrank;
-
-            return view('domain/show', compact('domain', 'da', 'pa', 'mozrank'));
-        } 
-        else 
-        {
-            return view('domain/show', compact('domain'));
-        }
+    {   
+        dd($domain->getAttributes());
     }
 
     /**
@@ -134,7 +118,7 @@ class DomainController extends Controller
 
     public function import() 
     {
-        return view('domain/import/index', compact('domains'));
+        return view('domain/import/index');
     }
 
     public function settings(Request $request)
@@ -144,7 +128,7 @@ class DomainController extends Controller
         ]);
         
         $csv_file = file($request->csv->getRealPath());
-        $parts = $this->csvStringsToArray($csv_file, 20000);
+        $parts = $this->csvStringsToArray($csv_file, 20000, false);
         foreach ($parts as $key => $strings) 
         {
             foreach($strings as $key => $string) 
@@ -155,6 +139,46 @@ class DomainController extends Controller
                 $domain->name = $str_domain_name;
                 $domain->save();
             }
+        }
+    }
+
+    public function getOptions($id)
+    {
+        ini_set("memory_limit", "2000M");
+        set_time_limit(10000);
+
+        $domains = DB::table("domains")->where("name", "LIKE", "%.ru%")->get();
+        $options = DB::table("options")->get();
+        $domainsNames = collect([]);
+        $optionsDomainNames = collect([]);
+
+        foreach ($domains as $key => $domain) 
+        {
+            $domainsNames->push($domain->name);
+        }
+
+        foreach ($options as $key => $option)
+        {
+            $optionsDomainNames->push($option->domain_name);
+        }
+
+        $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+        // dd("test");
+        dd($domainNamesWithoutOptions);
+        $domains = $domainNamesWithoutOptions->chunk(200)[$id];
+        
+        foreach ($domains as $key => $value) 
+        {
+            $option = new Option;
+            $option->domain_id = hexdec(uniqid());
+            $option->domain_name = $value;
+            $option->resource_name = "seo_rank_api2";
+    
+            $client = new Client();
+            $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $option->domain_name);
+            $jsonParams = json_encode(json_decode($response->getBody()));
+            $option->json_params = $jsonParams;
+            $option->save();
         }
     }
 

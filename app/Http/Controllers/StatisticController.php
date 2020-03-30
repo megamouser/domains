@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Statistic;
 use Illuminate\Http\Request;
 use DB;
+use App\Domain;
+use App\Option;
 
 class StatisticController extends Controller
 {
@@ -20,8 +22,28 @@ class StatisticController extends Controller
      */
     public function index()
     {
-        $options = DB::table("options")->get();
-        dd($options);
+        set_time_limit(10000);
+        $data = DB::table("domains")->count();
+        dd($data);
+
+        // foreach ($data[18] as $key => $data_value) 
+        // {
+        //     $option = new Option;
+        //     $option->domain_name = $data_value->domain_name;
+        //     $option->domain_id = $data_value->domain_id;
+        //     $option->resource_name = $data_value->resource_name;
+        //     $option->json_params = $data_value->json_params;
+        //     $option->save();
+        // }
+        // foreach ($domainsOldRows as $key => $domainOldRow)
+        // {
+        //     $domain = Domain::where("name", "=", $domainOldRow->name);
+
+        //     if($domain->exists())
+        //     {
+        //         dd($domain->get());
+        //     }
+        // }
     }
 
     /**

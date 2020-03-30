@@ -20,7 +20,7 @@ Route::get("phpinfo", function()
 Route::get('/domains/import', 'DomainController@import');
 Route::post('/domains/import/settings', 'DomainController@settings');
 // Route::get('/domains/search', 'DomainController@search');
-// Route::get('/domains/get-options/{id}', 'DomainController@getOptions');
+Route::get('/domains/get-options/{id}', 'DomainController@getOptions');
 // Route::post('/domains/get-options', 'DomainController@getOptions');
 
 Route::get('options/showall', 'OptionController@showAll');

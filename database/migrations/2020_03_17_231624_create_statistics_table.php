@@ -16,10 +16,11 @@ class CreateStatisticsTable extends Migration
         Schema::create('statistics', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('domain_name');
-            $table->string('resource_name');
-            $table->integer('da');
-            $table->integer('pa');
-            $table->integer('moz');
+            $table->float('da');
+            $table->float('pa');
+            $table->float('moz');
+            $table->float('links');
+            $table->float('equity');
             $table->timestamps();
         });
     }
