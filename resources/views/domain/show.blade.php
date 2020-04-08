@@ -10,14 +10,15 @@
             <div class="card-header">
                 <h1>Информация о домене</h1>
             </div>
-            <div class="card-body">
+            <div class="card-body pb-0">
                 <ul class="list-group">
                     <li class="list-group-item">
-                        Id домена: {{ $domain->id }}
+                        <b>id:</b> <span class="badge badge-info">{{ $domain->id }} </span>
                     </li>
                     <li class="list-group-item">
-                        Имя домена: {{ $domain->name }}
+                        <b>name:</b> <span class="badge badge-info">{{ $domain->name }} </span>
                     </li>
+                    {{-- 
                     <li class="list-group-item">
                         DA: {{ $da }}
                     </li>
@@ -26,7 +27,42 @@
                     </li>
                     <li class="list-group-item">
                         MOZ: {{ $mozrank }}
-                    </li>
+                    </li> 
+                    --}}
+                </ul>
+            </div>
+            <div class="card-body">
+                 <h4>Статистика</h4>
+
+                @if ($domain->json_params)                    
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <b>da: </b> <span class="badge badge-success">{{ $domain->da }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <b>pa: </b> <span class="badge badge-success">{{ $domain->pa }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <b>mozrank: </b> <span class="badge badge-success">{{ $domain->mozrank }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <b>links: </b> <span class="badge badge-success">{{ $domain->links }}</span>
+                        </li>
+                        <li class="list-group-item">
+                            <b>equity: </b> <span class="badge badge-success">{{ $domain->equity }}</span>
+                        </li>
+                    </ul>
+                @else
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            Статистика не найдена: <a href="/domains/{{ $domain->id }}/getparams">собрать статистику для этого домена</a>
+                        </li>
+                    </ul>
+                @endif
+            </div>
+            <div class="card-body">
+                <h4>Действия</h4>
+                <ul class="list-group">
                     <li class="list-group-item">
                         <div class="col">
                             <a href="/domains/{{ $domain->id }}/edit">Редактировать домен</a>

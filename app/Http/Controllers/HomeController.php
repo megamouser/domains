@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use DB;
 
 class HomeController extends Controller
 {
@@ -24,5 +25,11 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function settings()
+    {
+        $csvfiles = Storage::disk("public")->files("csv");
+        dd($csvfiles);
     }
 }

@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Domain;
-use \App\Option;
+use App\Option;
+use App\Jobs\GetOption;
+use App\Jobs\CreateDomainJob;
+use App\Jobs\DeleteDomainJob;
+use App\Jobs\ExportDomainsJob;
+use App\Jobs\ImportDomainsJob;
+use App\Jobs\PreparingDomainsJob;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use DB;
 use GuzzleHttp\Client;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+
 
 use function GuzzleHttp\json_decode;
 
@@ -15,7 +24,7 @@ class DomainController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('auth');~
+        $this->middleware('auth');
     }
     
     /**
@@ -25,26 +34,30 @@ class DomainController extends Controller
     */
     public function index()
     {
-        $domains = null;
         $search = "";
-        $domains = DB::table("domains");
-
+        $count = 10;
         $queryParams = collect(request()->query());
+
+        if($queryParams->has("count"))
+        {
+            $count = $queryParams->get("count");
+        }
+
+        $domains = DB::table("domains")->paginate($count)->appends($queryParams->toArray());
 
         if($queryParams->has("search"))
         {
             $search = $queryParams->get("search");
-            $domains = $domains->where("name", "LIKE", "%{$search}%");
+            $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->paginate($count)->appends($queryParams->toArray());
         }
 
-        if($queryParams->has("sort"))
+        if($queryParams->has("statistic"))
         {
-            $sort = $queryParams->get("sort");
-            $domains = $domains->orderBy($sort, "asc");
+            $statistic = $queryParams->get("statistic");
+            $domains = DB::table("domains")->where("json_params")->paginate($count)->appends($queryParams->toArray());
         }
 
-        $domains = $domains->paginate(10)->appends(request()->query());
-        return view("domain/index", compact("domains", "search"));
+        return view("domain/index", compact("domains", "search", "count"));
     }
 
     /**
@@ -65,7 +78,14 @@ class DomainController extends Controller
      */
     public function store(Request $request)
     {
-        Domain::create($this->validateRequest());
+        $request = request()->validate([
+            'name' => 'required|min:3|unique:domains',
+        ]);
+
+        $domain = new Domain;
+        $domain->name = $request["name"];
+        $domain->save();
+
         return redirect("/domains");
     }
 
@@ -77,7 +97,7 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {   
-        dd($domain->getAttributes());
+        return view('domain/show', compact('domain'));
     }
 
     /**
@@ -116,71 +136,163 @@ class DomainController extends Controller
         return redirect('domains');
     }
 
+    public function getparams(Domain $domain)
+    {
+        dump($domain->name);
+
+        if($domain->json_params == null) {
+            dump("Json params not found");
+            dump("Statistic will be loaded fron seo-rank");
+
+            // $client = new Client();
+
+            // $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $domain->name);
+            // $jsonParams = json_encode(json_decode($response->getBody()));
+
+            $json = <<<EOT
+            {"da":0,"pa":1,"mozrank":0.1,"links":0,"equity":0,"a_rank":"unknown","a_links":"unknown","a_cnt":"unknown","a_cnt_r":"unknown","sr_domain":"notfound","sr_rank":"notfound","sr_kwords":"notfound","sr_traffic":"notfound","sr_costs":"notfound","sr_ulinks":"0","sr_hlinks":"0","sr_dlinks":"0","fb_comments":0,"fb_shares":0,"fb_reac":0}
+            EOT;
+            $domain->json_params = $json;
+            $domain->da = json_decode($json)->da;
+            $domain->pa = json_decode($json)->pa;
+            $domain->mozrank = json_decode($json)->mozrank;
+            $domain->links = json_decode($json)->links;
+            $domain->equity = json_decode($json)->equity;
+            dd($domain->update());
+        }
+    }
+
     public function import() 
     {
         return view('domain/import/index');
     }
 
-    public function settings(Request $request)
-    {
-        $request->validate([
-            "csv" => "required|mimes:csv,txt"
-        ]);
-        
-        $csv_file = file($request->csv->getRealPath());
-        $parts = $this->csvStringsToArray($csv_file, 20000, false);
-        foreach ($parts as $key => $strings) 
-        {
-            foreach($strings as $key => $string) 
-            {
-                $arr_data = str_getcsv($string);
-                $str_domain_name = $arr_data[0];
-                $domain = new Domain;
-                $domain->name = $str_domain_name;
-                $domain->save();
-            }
-        }
+    public function export()
+    {  
+        $domainsCount = DB::table("domains")->count();
+        return view('domain/export/index', compact('domainsCount'));
     }
 
-    public function getOptions($id)
-    {
-        ini_set("memory_limit", "2000M");
-        set_time_limit(10000);
+    // public function importSettings(Request $request)
+    // {
+    //     $validatedRequest = $request->validate([
+    //         "csv" => "required|mimes:csv,txt"
+    //     ]);
 
-        $domains = DB::table("domains")->where("name", "LIKE", "%.ru%")->get();
-        $options = DB::table("options")->get();
-        $domainsNames = collect([]);
-        $optionsDomainNames = collect([]);
+        // $stdData = ( (object) file($validatedRequest["csv"]));
+        // $job = new ImportDomainsJob($validatedRequest["csv"]);
+        // dispatch($job);
+        // return redirect("/domains");
+        // $csvRealPath = $validatedRequest["csv"]->getRealPath();
+        // dd(file($csvRealPath));
+        // $this->dispatch($job);
+        // return redirect("/domains");
+    // }
 
-        foreach ($domains as $key => $domain) 
-        {
-            $domainsNames->push($domain->name);
-        }
-
-        foreach ($options as $key => $option)
-        {
-            $optionsDomainNames->push($option->domain_name);
-        }
-
-        $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-        // dd("test");
-        dd($domainNamesWithoutOptions);
-        $domains = $domainNamesWithoutOptions->chunk(200)[$id];
+    // public function exportSettings()
+    // {
+    //     $exportDomainsJob = new ExportDomainsJob();
+    //     dispatch($exportDomainsJob);
+    //     return redirect("domains");
         
-        foreach ($domains as $key => $value) 
-        {
-            $option = new Option;
-            $option->domain_id = hexdec(uniqid());
-            $option->domain_name = $value;
-            $option->resource_name = "seo_rank_api2";
+    //     $processesCount = 3;
+    //     for($i = 0; $i < $processesCount; $i++)
+    //     {
+    //         dump($i);
+    //     }
+
+    //     for ($i = 0; $i < $numberOfProcess; $i++) {
+    //         $process = new Process('php ' . base_path('artisan') . " task {$i}");
+    //         $process->setTimeout(0);
+    //         $process->disableOutput();
+    //         $process->start();
+    //         $processes[] = $process;
+    //    }
+
+        // dd("end");
+        // $process = new Process(['ls', '-lsa']);
+        // $process->setTimeout(0);
+        // // $process->disableOutput();
+        // $process->run();
+        
+        // // executes after the command finishes
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        
+        // dd($process->getOutput());
+        // ini_set("memory_limit", "-1");
+        // set_time_limit(10000);
+
+        // $preparingDomainsJob = new PreparingDomainsJob();
+        // dispatch($preparingDomainsJob);
+
+        // ini_set("memory_limit", "2000M");
+        // set_time_limit(10000);
+
+        // if(file_exists(base_path() . "/domains.csv"))
+        // {
+        //     unlink(base_path() . "/domains.csv");
+        // }
+        
+        // $domains = DB::table("domains")->get();
+        // dd($domains);
+        // $domainsChunks = $domains->get()->chunk(300000);
+
+        // foreach ($domainsChunks as $key => $domainsChunk) 
+        // {
+        //     $job = new ExportDomainsJob($domainsChunk);
+        //     $this->dispatch($job);
+        // }
+    // }
+
+    // public function getOption()
+    // {
+    //     $getOptionJob = new GetOption("TEST");
+    //     $getOptionJob->delay(20);
+    //     $this->dispatch($getOptionJob);
+    //     return redirect("domains");
+    // }
+
+    // public function getOptions($id)
+    // {
+    //     ini_set("memory_limit", "2000M");
+    //     set_time_limit(10000);
+
+    //     $domains = DB::table("domains")->where("name", "LIKE", "%.ru%")->get();
+    //     $options = DB::table("options")->get();
+    //     $domainsNames = collect([]);
+    //     $optionsDomainNames = collect([]);
+
+    //     foreach ($domains as $key => $domain) 
+    //     {
+    //         $domainsNames->push($domain->name);
+    //     }
+
+    //     foreach ($options as $key => $option)
+    //     {
+    //         $optionsDomainNames->push($option->domain_name);
+    //     }
+
+    //     $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+    //     // dd("test");
+    //     dd($domainNamesWithoutOptions);
+    //     $domains = $domainNamesWithoutOptions->chunk(200)[$id];
+        
+    //     foreach ($domains as $key => $value) 
+    //     {
+    //         $option = new Option;
+    //         $option->domain_id = hexdec(uniqid());
+    //         $option->domain_name = $value;
+    //         $option->resource_name = "seo_rank_api2";
     
-            $client = new Client();
-            $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $option->domain_name);
-            $jsonParams = json_encode(json_decode($response->getBody()));
-            $option->json_params = $jsonParams;
-            $option->save();
-        }
-    }
+    //         $client = new Client();
+    //         $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $option->domain_name);
+    //         $jsonParams = json_encode(json_decode($response->getBody()));
+    //         $option->json_params = $jsonParams;
+    //         $option->save();
+    //     }
+    // }
 
     // public function getOptions($id)
     // {   
@@ -209,6 +321,32 @@ class DomainController extends Controller
     //     return view("domain/getoptions");
     // }
 
+    // public function statistic()
+    // {
+    //     ini_set("memory_limit", "-1");
+    //     set_time_limit(10000);
+
+    //     // $domains = DB::table("domains")->where("name", "LIKE", "%.com%")->get();
+    //     $domains = DB::table("domains")->get();
+    //     $options = DB::table("options")->get();
+
+    //     $domainsNames = collect([]);
+    //     $optionsDomainNames = collect([]);
+
+    //     foreach ($domains as $key => $domain) 
+    //     {
+    //         $domainsNames->push($domain->name);
+    //     }
+
+    //     foreach ($options as $key => $option)
+    //     {
+    //         $optionsDomainNames->push($option->domain_name);
+    //     }
+
+    //     $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+    //     dd($domainNamesWithoutOptions);
+    // }
+
     private function validateRequest()
     {
         return request()->validate([
@@ -216,19 +354,19 @@ class DomainController extends Controller
         ]);
     }
 
-    private function csvStringsToArray($csv_file, $rows_in_complect = 1000, $first_row_as_params = true) 
-    {
-        if($first_row_as_params) 
-        {
-            $data = array_slice($csv_file, 1);
-            $result = (array_chunk($data, $rows_in_complect));
-        } 
-        else 
-        {
-            $data = array_slice($csv_file, 0);        
-            $result = (array_chunk($data, $rows_in_complect));
-        }
+    // private function csvStringsToArray($csv_file, $rows_in_complect = 1000, $first_row_as_params = true) 
+    // {
+    //     if($first_row_as_params) 
+    //     {
+    //         $data = array_slice($csv_file, 1);
+    //         $result = (array_chunk($data, 1000));
+    //     } 
+    //     else 
+    //     {
+    //         $data = array_slice($csv_file, 0);        
+    //         $result = (array_chunk($data, $rows_in_complect));
+    //     }
 
-        return $result;
-    }
+    //     return $result;
+    // }
 }

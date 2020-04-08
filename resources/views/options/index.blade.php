@@ -1,13 +1,7 @@
 @extends('main')
 @section('content')
-<div class="container-fluid bg-dark">
-    <div class="container">
-        @include('parts/navigation')
-    </div>
-</div>
-
+@include('parts/navigation')
 <br>
-
 <div class="container">
     <table class="table table-bordered table-striped rounded">
         <thead>
@@ -15,8 +9,8 @@
                 <th colspan="5">
                     <div class="container">
                         <form class="form-inline my-2 my-lg-0" action="/options" method="get">
-                            <input class="form-control mr-sm-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Полнотекстовый поиск">
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">поиск</button>
+                            <input class="form-control mr-sm-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Поиск">
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">искать</button>
                         </form>
                     </div>
                 </th>

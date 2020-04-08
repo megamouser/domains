@@ -14,9 +14,12 @@
                         <div>
                             <form enctype="multipart/form-data" action="/domains/import/settings" method="POST">
                                 @csrf
-                                <input name="csv" type="file">
-                                <br><br>
-                                <input class="btn btn-outline-success" type="submit" value="save">
+                                <div class="col mb-1">
+                                    <input name="csv" type="file">
+                                </div>
+                                <div class="col">
+                                    <input class="btn btn-success" type="submit" value="Импорт">
+                                </div>
                             </form>
                         
                             <div>{{ $errors->first('csv') }}</div>
