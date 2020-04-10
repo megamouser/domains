@@ -8,115 +8,134 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
     @if(count($domains))
-        <table class="table table-bordered table-striped rounded">
-            <thead>
-
-                <tr>
-                    <th colspan="7">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col">
-                                    <form class="form-inline my-2 my-lg-0" action="/domains" method="get">
-                                        <input class="form-control mr-sm-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Поиск">
-                                        <input type="hidden" name="count" value="{{ $count }}">
-                                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">искать</button>
-                                    </form>
-                                </div>
-                                <div class="col text-right">
-                                    <div class="my-2 my-lg-0">
-                                        <form action="/domains" method="get">
-                                            <input type="hidden" name="search">
-                                            <input type="hidden" name="count" value="{{ $count }}">
-                                            <input type="hidden" name="statistic" value="false">
-                                            <button type="submit" class="btn btn-outline-primary">БЕЗ СТАТИСТИКИ</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </th>
-                </tr>
-
-                <tr>
-                    <th scope="col">
-                        ID
-                    </th>
-                    <th scope="col">
-                        NAME
-                    </th>
-                    <th scope="col">
-                        DA
-                    </th>
-                    <th scope="col">
-                        PA
-                    </th>
-                    <th scope="col">
-                        MOZ
-                    </th>
-                    <th scope="col">
-                        LINKS
-                    </th>
-                    <th scope="col">
-                        EQUITY
-                    </th>
-                </tr>
-
-            </thead>
-            <tbody>
-                @foreach($domains as $domain)
-                    <tr>
-                        <th scope="row">{{ $domain->id }}</th>
-                        <td><a href="/domains/{{ $domain->id }}">{{ $domain->name }}</a></td>
-                        <td>{{ $domain->da }}</td>
-                        <td>{{ $domain->pa }}</td>
-                        <td>{{ $domain->mozrank }}</td>
-                        <td>{{ $domain->links }}</td>
-                        <td>{{ $domain->equity }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
 
         <div class="container">
-            <div class="row">
-                <div class="col-10">
-                    {{ $domains->links() }}
+            <form class="form-inline my-2" action="/domains" method="get">
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Поиск</span>
+                    </div>
+                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Имя домена">
                 </div>
-                <div class="col-2">
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Количество</span>
+                    </div>
+                    <input class="form-control" aria-lsabel="count" name="count" type="number" value="{{ $count }}" placeholder="Поиск">
+                </div>
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Сортировать</span>
+                    </div>
+                    <select name="sort">
+                        <option value="id">id</option>
+                        <option value="name">name</option>
+                        <option value="da">da</option>
+                        <option value="pa">pa</option>
+                        <option value="mozrank">mozrank</option>
+                        <option value="links">links</option>
+                        <option value="equity">equity</option>
+                    </select>
+                    {{-- <input class="form-control" aria-label="order" name="order" type="text" value="{{ $sort }}" placeholder="Поиск"> --}}
+                </div>
+                <button class="btn btn-outline-primary m-1" type="submit">искать</button>
+            </form>
+        </div>
+
+        <div class="container">
+            <div class="table-responsive">
+                <div>
+                    <table class="table table-bordered table-striped rounded">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">NAME</th>
+                                <th scope="col">DA</th>
+                                <th scope="col">PA</th>
+                                <th scope="col">MOZ</th>
+                                <th scope="col">LINKS</th>
+                                <th scope="col">EQUITY</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            @foreach($domains as $domain)
+                                <tr>
+                                    <th scope="row">{{ $domain->id }}</th>
+                                    <td><a href="/domains/{{ $domain->id }}">{{ $domain->name }}</a></td>
+                                    <td>{{ $domain->da }}</td>
+                                    <td>{{ $domain->pa }}</td>
+                                    <td>{{ $domain->mozrank }}</td>
+                                    <td>{{ $domain->links }}</td>
+                                    <td>{{ $domain->equity }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            {{ $domains->links() }}
+
+            {{-- 
+                <div class="col text-right">
                     <form action="/domains">
                         <input type="hidden" name="search" value="{{ $search }}">
                         <input class="form-control" type="number" name="count" value="{{ $count }}">
                     </form>
-                </div>
-            </div>
+                </div> 
+            --}}
+                
         </div>
-    @else 
-        <table class="table table-bordered table-striped rounded">
-            <thead>
 
-                <tr>
-                    <th colspan="6">
-                        <div class="container">
-                            <form class="form-inline my-2 my-lg-0" action="/domains" method="get">
-                                <input class="form-control mr-sm-2" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Поиск">
-                                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">искать</button>
-                            </form>
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th style="text-align: center;">
-                        <div style="font-weight: bolder; color: #ccc">Список пуст</div>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+    @else
+        <div class="container">
+            <form class="form-inline my-2" action="/domains" method="get">
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Поиск</span>
+                    </div>
+                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Имя домена">
+                </div>
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Количество</span>
+                    </div>
+                    <input class="form-control" aria-label="count" name="count" type="number" value="{{ $count }}" placeholder="Поиск">
+                </div>
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Сортировать</span>
+                    </div>
+                    <input class="form-control" aria-label="order" name="sort" type="text" value="{{ $sort }}" placeholder="Поиск">
+                </div>
+
+                    <button class="btn btn-outline-primary m-1" type="submit">Поиск</button>
+            </form>
+        </div>
+
+        <div class="container">
+            <div class="table-responsive">
+                <div>
+                    <table class="table table-bordered table-striped rounded">
+                        <tbody>
+                            <tr>
+                                <th style="text-align: center;">
+                                    <div style="font-weight: bolder; color: #ccc">Список пуст</div>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table> 
+                </div>       
+            </div>
+        </div> 
     @endif
 </div>
+
 
 <div class="container-fluid">
     <div class="container">

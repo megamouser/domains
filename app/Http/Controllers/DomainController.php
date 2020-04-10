@@ -35,12 +35,17 @@ class DomainController extends Controller
     public function index()
     {
         $search = "";
-        $count = 10;
+        $count = 50;
         $queryParams = collect(request()->query());
+        $sort = "id";
 
         if($queryParams->has("count"))
         {
             $count = $queryParams->get("count");
+            if($count == null) 
+            {
+                $count = 50;
+            }
         }
 
         $domains = DB::table("domains")->paginate($count)->appends($queryParams->toArray());
@@ -51,13 +56,13 @@ class DomainController extends Controller
             $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->paginate($count)->appends($queryParams->toArray());
         }
 
-        if($queryParams->has("statistic"))
+        if($queryParams->has("sort"))
         {
-            $statistic = $queryParams->get("statistic");
-            $domains = DB::table("domains")->where("json_params")->paginate($count)->appends($queryParams->toArray());
+            $sort = $queryParams->get("sort");
+            $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sort)->paginate($count)->appends($queryParams->toArray());
         }
 
-        return view("domain/index", compact("domains", "search", "count"));
+        return view("domain/index", compact("domains", "search", "count", "sort"));
     }
 
     /**
@@ -142,16 +147,17 @@ class DomainController extends Controller
 
         if($domain->json_params == null) {
             dump("Json params not found");
-            dump("Statistic will be loaded fron seo-rank");
+            dump("Statistic will be loaded from seo-rank");
 
-            // $client = new Client();
+            $client = new Client();
 
-            // $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $domain->name);
-            // $jsonParams = json_encode(json_decode($response->getBody()));
+            $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $domain->name);
+            $json = json_encode(json_decode($response->getBody()));
 
-            $json = <<<EOT
-            {"da":0,"pa":1,"mozrank":0.1,"links":0,"equity":0,"a_rank":"unknown","a_links":"unknown","a_cnt":"unknown","a_cnt_r":"unknown","sr_domain":"notfound","sr_rank":"notfound","sr_kwords":"notfound","sr_traffic":"notfound","sr_costs":"notfound","sr_ulinks":"0","sr_hlinks":"0","sr_dlinks":"0","fb_comments":0,"fb_shares":0,"fb_reac":0}
-            EOT;
+            // $json = <<<EOT
+            // {"da":0,"pa":1,"mozrank":0.1,"links":0,"equity":0,"a_rank":"unknown","a_links":"unknown","a_cnt":"unknown","a_cnt_r":"unknown","sr_domain":"notfound","sr_rank":"notfound","sr_kwords":"notfound","sr_traffic":"notfound","sr_costs":"notfound","sr_ulinks":"0","sr_hlinks":"0","sr_dlinks":"0","fb_comments":0,"fb_shares":0,"fb_reac":0}
+            // EOT;
+
             $domain->json_params = $json;
             $domain->da = json_decode($json)->da;
             $domain->pa = json_decode($json)->pa;
@@ -173,21 +179,22 @@ class DomainController extends Controller
         return view('domain/export/index', compact('domainsCount'));
     }
 
-    // public function importSettings(Request $request)
-    // {
-    //     $validatedRequest = $request->validate([
-    //         "csv" => "required|mimes:csv,txt"
-    //     ]);
+    public function importSettings(Request $request)
+    {
+        $validatedRequest = $request->validate([
+            "csv" => "required|mimes:csv,txt"
+        ]);
 
-        // $stdData = ( (object) file($validatedRequest["csv"]));
-        // $job = new ImportDomainsJob($validatedRequest["csv"]);
-        // dispatch($job);
-        // return redirect("/domains");
-        // $csvRealPath = $validatedRequest["csv"]->getRealPath();
-        // dd(file($csvRealPath));
-        // $this->dispatch($job);
-        // return redirect("/domains");
-    // }
+        $stdData = ( (object) file($validatedRequest["csv"]));
+
+        foreach ($stdData as $key => $value) 
+        {
+            $value = trim($value, "\n");
+            DB::table("domains")->updateOrInsert(["name" => $value]);
+        }
+
+        return redirect("/domains");
+    }
 
     // public function exportSettings()
     // {
@@ -321,31 +328,31 @@ class DomainController extends Controller
     //     return view("domain/getoptions");
     // }
 
-    // public function statistic()
-    // {
-    //     ini_set("memory_limit", "-1");
-    //     set_time_limit(10000);
+    public function statistic()
+    {
+        ini_set("memory_limit", "-1");
+        set_time_limit(10000);
 
-    //     // $domains = DB::table("domains")->where("name", "LIKE", "%.com%")->get();
-    //     $domains = DB::table("domains")->get();
-    //     $options = DB::table("options")->get();
+        // $domains = DB::table("domains")->where("name", "LIKE", "%.com%")->get();
+        $domains = DB::table("domains")->get();
+        $options = DB::table("options")->get();
 
-    //     $domainsNames = collect([]);
-    //     $optionsDomainNames = collect([]);
+        $domainsNames = collect([]);
+        $optionsDomainNames = collect([]);
 
-    //     foreach ($domains as $key => $domain) 
-    //     {
-    //         $domainsNames->push($domain->name);
-    //     }
+        foreach ($domains as $key => $domain) 
+        {
+            $domainsNames->push($domain->name);
+        }
 
-    //     foreach ($options as $key => $option)
-    //     {
-    //         $optionsDomainNames->push($option->domain_name);
-    //     }
+        foreach ($options as $key => $option)
+        {
+            $optionsDomainNames->push($option->domain_name);
+        }
 
-    //     $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-    //     dd($domainNamesWithoutOptions);
-    // }
+        $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
+        dd($domainNamesWithoutOptions);
+    }
 
     private function validateRequest()
     {
