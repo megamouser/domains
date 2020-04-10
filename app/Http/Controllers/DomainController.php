@@ -59,7 +59,9 @@ class DomainController extends Controller
         if($queryParams->has("sort"))
         {
             $sort = $queryParams->get("sort");
-            $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sort)->paginate($count)->appends($queryParams->toArray());
+            if($sort == "id" || $sort == "name" || $sort == "da" || $sort == "pa" || $sort == "mozrank" || $sort == "links" || $sort == "equity") {
+                $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sort)->paginate($count)->appends($queryParams->toArray());
+            }
         }
 
         return view("domain/index", compact("domains", "search", "count", "sort"));
@@ -164,7 +166,8 @@ class DomainController extends Controller
             $domain->mozrank = json_decode($json)->mozrank;
             $domain->links = json_decode($json)->links;
             $domain->equity = json_decode($json)->equity;
-            dd($domain->update());
+            $domain->update();
+            return back();
         }
     }
 
