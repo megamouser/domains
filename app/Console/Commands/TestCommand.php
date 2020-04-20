@@ -1,25 +1,24 @@
 <?php
 
 namespace App\Console\Commands;
-
 use Illuminate\Console\Command;
 use DB;
 
-class DeleteAllDomains extends Command
+class TestCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:deldomains';
+    protected $signature = 'command:test';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Delete all domains';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -38,14 +37,9 @@ class DeleteAllDomains extends Command
      */
     public function handle()
     {
-        ini_set("memory_limit", "-1");
-        set_time_limit(120);
-
-        $domains = DB::table("domains")->get();
-        
-        foreach ($domains as $key => $domain) 
-        {
-            dump($domain);
-        }
+        $currentProcessId = DB::table("processes")->insertGetId(["name" => "test", "status" => "runned", "runned_at" => date("Y-m-d H:i:s")]);
+        sleep(10);
+        DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
+        dd("end");
     }
 }

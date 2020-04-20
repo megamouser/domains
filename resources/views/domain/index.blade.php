@@ -1,10 +1,12 @@
 @extends('main')
 @section('content')
 @include('parts/navigation')
+
 <br>
+
 <div class="container-fluid">
     <div class="container">
-        <h1>Домены</h1>
+        <h1>Domains</h1>
     </div>
 </div>
 
@@ -15,21 +17,21 @@
             <form class="form-inline my-2" action="/domains" method="get">
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Поиск</span>
+                        <span class="input-group-text" id="basic-addon1">Name</span>
                     </div>
-                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Имя домена">
+                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="domain name">
                 </div>
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Количество</span>
+                        <span class="input-group-text" id="basic-addon1">Count</span>
                     </div>
                     <input class="form-control" aria-lsabel="count" name="count" type="number" value="{{ $count }}" placeholder="Поиск">
                 </div>
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Сортировать</span>
+                        <span class="input-group-text" id="basic-addon1">Sort</span>
                     </div>
-                    <select name="sort">
+                    <select id="mySelect" class="form-control" name="sort">
                         <option value="id">id</option>
                         <option value="name">name</option>
                         <option value="da">da</option>
@@ -40,7 +42,7 @@
                     </select>
                     {{-- <input class="form-control" aria-label="order" name="order" type="text" value="{{ $sort }}" placeholder="Поиск"> --}}
                 </div>
-                <button class="btn btn-outline-primary m-1" type="submit">искать</button>
+                <button class="btn btn-outline-primary m-1" type="submit">Search</button>
             </form>
         </div>
 
@@ -97,24 +99,24 @@
             <form class="form-inline my-2" action="/domains" method="get">
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Поиск</span>
+                        <span class="input-group-text" id="basic-addon1">Name</span>
                     </div>
-                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="Имя домена">
+                    <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="domain name">
                 </div>
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Количество</span>
+                        <span class="input-group-text" id="basic-addon1">Count</span>
                     </div>
                     <input class="form-control" aria-label="count" name="count" type="number" value="{{ $count }}" placeholder="Поиск">
                 </div>
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Сортировать</span>
+                        <span class="input-group-text" id="basic-addon1">Sort</span>
                     </div>
                     <input class="form-control" aria-label="order" name="sort" type="text" value="{{ $sort }}" placeholder="Поиск">
                 </div>
 
-                    <button class="btn btn-outline-primary m-1" type="submit">Поиск</button>
+                <button class="btn btn-outline-primary m-1" type="submit">Search</button>
             </form>
         </div>
 
@@ -139,13 +141,19 @@
 
 <div class="container-fluid">
     <div class="container">
-        <a href="domains/create">Создать домен</a>
+        <a href="domains/create">Create a domain</a>
     </div>
     <div class="container">
-        <a href="/domains?search=.ru">Домены RU</a>
+        <a href="/domains?search=.ru">Only RU</a>
     </div>
     <div class="container">
-        <a href="/domains?search=.com">Домены COM</a>
+        <a href="/domains?search=.com">Only COM</a>
+    </div>
+    <div class="container">
+        <a href="/domains/export">Export</a>
+    </div>
+    <div class="container">
+        <a href="/domains/import">Import</a>
     </div>
 </div>
 @endsection

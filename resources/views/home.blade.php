@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Главная</div>
+                <div class="card-header">Administration</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -20,10 +20,10 @@
                     @endif
 
                     <div>
-                        Вы вошли как: {{ Auth::user()->name }}
+                        You're logged in like: {{ Auth::user()->name }}
                     </div>
                     <div>
-                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Exit</a>
                     </div>
                 </div>
             </div>

@@ -5,19 +5,15 @@ namespace App\Http\Controllers;
 use App\Domain;
 use App\Option;
 use App\Jobs\GetOption;
-use App\Jobs\CreateDomainJob;
-use App\Jobs\DeleteDomainJob;
-use App\Jobs\ExportDomainsJob;
-use App\Jobs\ImportDomainsJob;
-use App\Jobs\PreparingDomainsJob;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use DB;
+use Artisan;
 use GuzzleHttp\Client;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use function GuzzleHttp\json_decode;
 
 class DomainController extends Controller
@@ -59,7 +55,9 @@ class DomainController extends Controller
         if($queryParams->has("sort"))
         {
             $sort = $queryParams->get("sort");
-            if($sort == "id" || $sort == "name" || $sort == "da" || $sort == "pa" || $sort == "mozrank" || $sort == "links" || $sort == "equity") {
+
+            if($sort == "id" || $sort == "name" || $sort == "da" || $sort == "pa" || $sort == "mozrank" || $sort == "links" || $sort == "equity") 
+            {
                 $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sort)->paginate($count)->appends($queryParams->toArray());
             }
         }
@@ -147,7 +145,8 @@ class DomainController extends Controller
     {
         dump($domain->name);
 
-        if($domain->json_params == null) {
+        if($domain->json_params == null) 
+        {
             dump("Json params not found");
             dump("Statistic will be loaded from seo-rank");
 
@@ -172,189 +171,102 @@ class DomainController extends Controller
     }
 
     public function import() 
-    {
-        return view('domain/import/index');
+    { 
+        $runnedExportProcess = DB::table("processes")->where("name", "=", "import")->where("status", "=", "runned")->get();
+        $importAllowed = true;
+
+        if($runnedExportProcess->count())
+        {
+            $importAllowed = false;
+        }
+
+        return view('domain/import/index', compact('importAllowed'));
     }
 
     public function export()
     {  
+        $runnedExportProcess = DB::table("processes")->where("name", "=", "export")->where("status", "=", "runned")->get();
+        $exportAllowed = true;
+
+        if($runnedExportProcess->count())
+        {
+            $exportAllowed = false;
+        }
+
         $domainsCount = DB::table("domains")->count();
-        return view('domain/export/index', compact('domainsCount'));
+        return view('domain/export/index', compact('domainsCount', 'exportAllowed'));
     }
 
     public function importSettings(Request $request)
     {
         $validatedRequest = $request->validate([
-            "csv" => "required|mimes:csv,txt"
+            "xlsx" => "required|mimes:xlsx"
         ]);
+        
+        $fileRealPath = $validatedRequest["xlsx"]->getRealPath();
+            
+        $command = "command:exceltodomains $fileRealPath &";
+        $numberOfProcesses = 1;
 
-        $stdData = ( (object) file($validatedRequest["csv"]));
-
-        foreach ($stdData as $key => $value) 
+        for ($i = 0; $i < $numberOfProcesses; $i++) 
         {
-            $value = trim($value, "\n");
-            DB::table("domains")->updateOrInsert(["name" => $value]);
+            $process = new Process('php ' . base_path('artisan') . " $command");
+            $process->setTimeout(0);
+            $process->disableOutput();
+            $process->start();
+
+            $processes[] = $process;
+       }
+
+        while(count($processes))
+        {
+            foreach ($processes as $key => $runningProcess) 
+            {
+                if(!$runningProcess->isRunning())
+                {
+                    unset($processes[$key]);
+                }
+
+                sleep(1);
+            }
         }
 
-        return redirect("/domains");
+        return redirect("/domains/import");
     }
 
-    // public function exportSettings()
-    // {
-    //     $exportDomainsJob = new ExportDomainsJob();
-    //     dispatch($exportDomainsJob);
-    //     return redirect("domains");
-        
-    //     $processesCount = 3;
-    //     for($i = 0; $i < $processesCount; $i++)
-    //     {
-    //         dump($i);
-    //     }
-
-    //     for ($i = 0; $i < $numberOfProcess; $i++) {
-    //         $process = new Process('php ' . base_path('artisan') . " task {$i}");
-    //         $process->setTimeout(0);
-    //         $process->disableOutput();
-    //         $process->start();
-    //         $processes[] = $process;
-    //    }
-
-        // dd("end");
-        // $process = new Process(['ls', '-lsa']);
-        // $process->setTimeout(0);
-        // // $process->disableOutput();
-        // $process->run();
-        
-        // // executes after the command finishes
-        // if (!$process->isSuccessful()) {
-        //     throw new ProcessFailedException($process);
-        // }
-        
-        // dd($process->getOutput());
-        // ini_set("memory_limit", "-1");
-        // set_time_limit(10000);
-
-        // $preparingDomainsJob = new PreparingDomainsJob();
-        // dispatch($preparingDomainsJob);
-
-        // ini_set("memory_limit", "2000M");
-        // set_time_limit(10000);
-
-        // if(file_exists(base_path() . "/domains.csv"))
-        // {
-        //     unlink(base_path() . "/domains.csv");
-        // }
-        
-        // $domains = DB::table("domains")->get();
-        // dd($domains);
-        // $domainsChunks = $domains->get()->chunk(300000);
-
-        // foreach ($domainsChunks as $key => $domainsChunk) 
-        // {
-        //     $job = new ExportDomainsJob($domainsChunk);
-        //     $this->dispatch($job);
-        // }
-    // }
-
-    // public function getOption()
-    // {
-    //     $getOptionJob = new GetOption("TEST");
-    //     $getOptionJob->delay(20);
-    //     $this->dispatch($getOptionJob);
-    //     return redirect("domains");
-    // }
-
-    // public function getOptions($id)
-    // {
-    //     ini_set("memory_limit", "2000M");
-    //     set_time_limit(10000);
-
-    //     $domains = DB::table("domains")->where("name", "LIKE", "%.ru%")->get();
-    //     $options = DB::table("options")->get();
-    //     $domainsNames = collect([]);
-    //     $optionsDomainNames = collect([]);
-
-    //     foreach ($domains as $key => $domain) 
-    //     {
-    //         $domainsNames->push($domain->name);
-    //     }
-
-    //     foreach ($options as $key => $option)
-    //     {
-    //         $optionsDomainNames->push($option->domain_name);
-    //     }
-
-    //     $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-    //     // dd("test");
-    //     dd($domainNamesWithoutOptions);
-    //     $domains = $domainNamesWithoutOptions->chunk(200)[$id];
-        
-    //     foreach ($domains as $key => $value) 
-    //     {
-    //         $option = new Option;
-    //         $option->domain_id = hexdec(uniqid());
-    //         $option->domain_name = $value;
-    //         $option->resource_name = "seo_rank_api2";
-    
-    //         $client = new Client();
-    //         $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $option->domain_name);
-    //         $jsonParams = json_encode(json_decode($response->getBody()));
-    //         $option->json_params = $jsonParams;
-    //         $option->save();
-    //     }
-    // }
-
-    // public function getOptions($id)
-    // {   
-    //     $domains = DB::table("domains")->get();
-    //     $options = DB::table("options")->get();
-    //     $domainsNames = collect([]);
-    //     $optionsDomainNames = collect([]);
-
-    //     foreach ($domains as $key => $domain) 
-    //     {
-    //         $domainsNames->push($domain->name);
-    //     }
-
-    //     foreach ($options as $key => $option)
-    //     {
-    //         $optionsDomainNames->push($option->domain_name);
-    //     }
-
-    //     $domainsNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-    //     $domains = $domainsNamesWithoutOptions->chunk(50)[$id];
-    //     foreach ($domains as $key => $domain) 
-    //     {
-    //         echo "<div data-domain='$domain' class='update_statistic'>" . $domain . "</div>";
-    //     }
-
-    //     return view("domain/getoptions");
-    // }
-
-    public function statistic()
+    public function exportSettings()
     {
-        ini_set("memory_limit", "-1");
-        set_time_limit(10000);
+        $startEndParam = request()->startend;
 
-        // $domains = DB::table("domains")->where("name", "LIKE", "%.com%")->get();
-        $domains = DB::table("domains")->get();
-        $options = DB::table("options")->get();
+        $params = explode("-", request()->startend);
+        $startNum = $params[0];
+        $endNum = $params[1];
+        $command = "command:domainstoexcel $startNum $endNum &";
+        $numberOfProcesses = 1;
 
-        $domainsNames = collect([]);
-        $optionsDomainNames = collect([]);
-
-        foreach ($domains as $key => $domain) 
+        for ($i = 0; $i < $numberOfProcesses; $i++) 
         {
-            $domainsNames->push($domain->name);
+            $process = new Process('php ' . base_path('artisan') . " $command");
+            $process->setTimeout(0);
+            $process->disableOutput();
+            $process->start();
+            $processes[] = $process;
         }
 
-        foreach ($options as $key => $option)
+        while(count($processes))
         {
-            $optionsDomainNames->push($option->domain_name);
+            foreach ($processes as $key => $runningProcess) 
+            {
+                if(!$runningProcess->isRunning())
+                {
+                    unset($processes[$key]);
+                }
+
+                sleep(1);
+            }
         }
 
-        $domainNamesWithoutOptions = $domainsNames->diff($optionsDomainNames);
-        dd($domainNamesWithoutOptions);
+        return back();
     }
 
     private function validateRequest()
@@ -363,20 +275,4 @@ class DomainController extends Controller
             'name' => 'required|min:3',
         ]);
     }
-
-    // private function csvStringsToArray($csv_file, $rows_in_complect = 1000, $first_row_as_params = true) 
-    // {
-    //     if($first_row_as_params) 
-    //     {
-    //         $data = array_slice($csv_file, 1);
-    //         $result = (array_chunk($data, 1000));
-    //     } 
-    //     else 
-    //     {
-    //         $data = array_slice($csv_file, 0);        
-    //         $result = (array_chunk($data, $rows_in_complect));
-    //     }
-
-    //     return $result;
-    // }
 }

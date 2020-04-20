@@ -24,8 +24,6 @@ Route::get('/domains/{domain}/getparams', 'DomainController@getparams');
 
 Route::resources([
     'domains' => 'DomainController',
-    // 'options' => 'OptionController',
-    // 'statistic' => 'StatisticController'
 ]);
 
 
@@ -33,7 +31,9 @@ Route::resources([
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
-Route::get("/settings", 'HomeController@settings');
+Route::get('/settings', 'HomeController@settings');
+Route::get('/settings/delete', 'HomeController@fileDelete');
+Route::get('/settings/download', 'HomeController@fileDownload');
 
 Route::get('phpinfo', function() 
 {

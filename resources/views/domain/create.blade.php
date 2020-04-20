@@ -6,7 +6,7 @@
 
 <div class="container-fluid">
     <div class="container">
-        <h1>Создать домен</h1>
+        <h1>Create a domain name</h1>
     </div>
 </div>
 
@@ -18,7 +18,7 @@
             @csrf
 
             <input class="form-control mr-sm-2" type="text" placeholder="Имя домена" name="name" value="{{ old('name') }}">
-            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Сохранить</button>
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Save</button>
         </form>
 
         <div class="container">
