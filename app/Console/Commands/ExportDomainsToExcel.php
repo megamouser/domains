@@ -83,6 +83,7 @@ class ExportDomainsToExcel extends Command
 
             $writer = new Xlsx($spreadsheet);
             $documentName = $this->argument("startNum") . "-" . $this->argument("endNum");
+	    dump(storage_path("app/public/exported/$documentName.xlsx"));
             $writer->save(storage_path("app/public/exported/$documentName.xlsx"));
             
             DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
