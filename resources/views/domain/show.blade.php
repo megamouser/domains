@@ -32,7 +32,7 @@
                             <b>pa: </b> <span class="badge badge-success">{{ $domain->pa }}</span>
                         </li>
                         <li class="list-group-item">
-                            <b>mozrank: </b> <span class="badge badge-success">{{ $domain->mozrank }}</span>
+                            <b>mozrank: </b> <span class="badge badge-success">{{ $domain->moz }}</span>
                         </li>
                         <li class="list-group-item">
                             <b>links: </b> <span class="badge badge-success">{{ $domain->links }}</span>

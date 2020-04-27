@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/custom', function() {
+    dd(config('app'));
+});
 
 Route::get('/domains/statistic', 'DomainController@statistic');
 Route::get('/domains/import', 'DomainController@import');
@@ -39,3 +42,7 @@ Route::get('phpinfo', function()
 {
     phpinfo();
 });
+
+Route::get('statistics', 'StatisticController@index');
+Route::get('statistics/collect', 'StatisticController@collect');
+// Route::get('archieve', 'ArchieveController@index');

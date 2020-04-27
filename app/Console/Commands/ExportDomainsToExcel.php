@@ -50,7 +50,7 @@ class ExportDomainsToExcel extends Command
             $sheet->setCellValue('B1', 'name');
             $sheet->setCellValue('C1', 'da');
             $sheet->setCellValue('D1', 'pa');
-            $sheet->setCellValue('E1', 'mozrank');
+            $sheet->setCellValue('E1', 'moz');
             $sheet->setCellValue('F1', 'links');
             $sheet->setCellValue('G1', 'equity');
             $sheet->setCellValue('H1', 'json_params');
@@ -69,7 +69,7 @@ class ExportDomainsToExcel extends Command
                     $sheet->setCellValue("B$cellId", $domain->name);
                     $sheet->setCellValue("C$cellId", $domain->da);
                     $sheet->setCellValue("D$cellId", $domain->pa);
-                    $sheet->setCellValue("E$cellId", $domain->mozrank);
+                    $sheet->setCellValue("E$cellId", $domain->moz);
                     $sheet->setCellValue("F$cellId", $domain->links);
                     $sheet->setCellValue("G$cellId", $domain->equity);
                     $sheet->setCellValue("H$cellId", $domain->json_params);
@@ -83,9 +83,7 @@ class ExportDomainsToExcel extends Command
 
             $writer = new Xlsx($spreadsheet);
             $documentName = $this->argument("startNum") . "-" . $this->argument("endNum");
-	    dump(storage_path("app/public/exported/$documentName.xlsx"));
             $writer->save(storage_path("app/public/exported/$documentName.xlsx"));
-            
             DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
         }
 
@@ -111,7 +109,7 @@ class ExportDomainsToExcel extends Command
         // $sheet->setCellValue('B1', 'name');
         // $sheet->setCellValue('C1', 'da');
         // $sheet->setCellValue('D1', 'pa');
-        // $sheet->setCellValue('E1', 'mozrank');
+        // $sheet->setCellValue('E1', 'moz');
         // $sheet->setCellValue('F1', 'links');
         // $sheet->setCellValue('G1', 'equity');
         // $sheet->setCellValue('H1', 'json_params');
@@ -127,7 +125,7 @@ class ExportDomainsToExcel extends Command
         //     $sheet->setCellValue("B$cellId", $domain->name);
         //     $sheet->setCellValue("C$cellId", $domain->da);
         //     $sheet->setCellValue("D$cellId", $domain->pa);
-        //     $sheet->setCellValue("E$cellId", $domain->mozrank);
+        //     $sheet->setCellValue("E$cellId", $domain->moz);
         //     $sheet->setCellValue("F$cellId", $domain->links);
         //     $sheet->setCellValue("G$cellId", $domain->equity);
         //     $sheet->setCellValue("H$cellId", $domain->json_params);

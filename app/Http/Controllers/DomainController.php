@@ -22,6 +22,22 @@ class DomainController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function test()
+    {
+        $process = new Process(['ls', '-lsa']);
+        $process->start();
+
+        // ... do other things
+        // waits until the given anonymous function returns true
+        $process->waitUntil(function ($type, $output) {
+            return $output === 'Ready. Waiting for commands...';
+        });
+
+        dd($process);
+
+        // ... do things after the process is ready
+    }
     
     /**
      * Display a listing of the resource.
@@ -33,7 +49,7 @@ class DomainController extends Controller
         $search = "";
         $count = 50;
         $queryParams = collect(request()->query());
-        $sort = "id";
+        $sort = "";
 
         if($queryParams->has("count"))
         {
@@ -56,9 +72,12 @@ class DomainController extends Controller
         {
             $sort = $queryParams->get("sort");
 
-            if($sort == "id" || $sort == "name" || $sort == "da" || $sort == "pa" || $sort == "mozrank" || $sort == "links" || $sort == "equity") 
+            if($sort == "id" || $sort == "name" || $sort == "da" || $sort == "pa" || $sort == "moz" || $sort == "links" || $sort == "equity") 
             {
                 $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sort)->paginate($count)->appends($queryParams->toArray());
+            } elseif($sort == "-id" || $sort == "-name" || $sort == "-da" || $sort == "-pa" || $sort == "-moz" || $sort == "-links" || $sort == "-equity") {
+                $sorting = ltrim($sort, "-");
+                $domains = DB::table("domains")->where("name", "LIKE", "%{$search}%")->orderBy($sorting, "DESC")->paginate($count)->appends($queryParams->toArray());
             }
         }
 
@@ -156,13 +175,13 @@ class DomainController extends Controller
             $json = json_encode(json_decode($response->getBody()));
 
             // $json = <<<EOT
-            // {"da":0,"pa":1,"mozrank":0.1,"links":0,"equity":0,"a_rank":"unknown","a_links":"unknown","a_cnt":"unknown","a_cnt_r":"unknown","sr_domain":"notfound","sr_rank":"notfound","sr_kwords":"notfound","sr_traffic":"notfound","sr_costs":"notfound","sr_ulinks":"0","sr_hlinks":"0","sr_dlinks":"0","fb_comments":0,"fb_shares":0,"fb_reac":0}
+            // {"da":0,"pa":1,"moz":0.1,"links":0,"equity":0,"a_rank":"unknown","a_links":"unknown","a_cnt":"unknown","a_cnt_r":"unknown","sr_domain":"notfound","sr_rank":"notfound","sr_kwords":"notfound","sr_traffic":"notfound","sr_costs":"notfound","sr_ulinks":"0","sr_hlinks":"0","sr_dlinks":"0","fb_comments":0,"fb_shares":0,"fb_reac":0}
             // EOT;
 
             $domain->json_params = $json;
             $domain->da = json_decode($json)->da;
             $domain->pa = json_decode($json)->pa;
-            $domain->mozrank = json_decode($json)->mozrank;
+            $domain->moz = json_decode($json)->mozrank;
             $domain->links = json_decode($json)->links;
             $domain->equity = json_decode($json)->equity;
             $domain->update();

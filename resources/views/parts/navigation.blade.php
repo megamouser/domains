@@ -17,18 +17,14 @@
             <a class="nav-link" href="/domains">Domains</a>
           </li>
           <li class="nav-item active">
+            <a class="nav-link" href="/statistics">Statistics</a>
+          </li>
+          {{-- <li class="nav-item active">
+            <a class="nav-link" href="/archieve">Archieve</a>
+          </li> --}}
+          <li class="nav-item active">
             <a class="nav-link" href="/settings">Settings</a>
           </li>
-          {{-- 
-          <li class="nav-item active">
-            <a class="nav-link" href="/options">Опции</a>
-          </li>  
-          --}}
-          <!-- 
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li> 
-          -->
         </ul>
       </div>
     </nav>

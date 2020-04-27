@@ -27,7 +27,7 @@
 
     @if(count($domains))
         <div class="container">
-            <form class="form-inline my-2 searchForm" action="/domains" method="get">
+            <form class="form-inline my-2 searchForm" action="/archieve" method="get">
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Name</span>
@@ -44,20 +44,20 @@
                 <input type="hidden" name="sort" value={{ $sort }}>
                 
                 {{-- 
-                <div class="input-group m-1">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Sort</span>
-                    </div>
-                    <select id="mySelect" class="form-control" name="sort">
-                        <option value="id">id</option>
-                        <option value="name">name</option>
-                        <option value="da">da</option>
-                        <option value="pa">pa</option>
-                        <option value="mozrank">mozrank</option>
-                        <option value="links">links</option>
-                        <option value="equity">equity</option>
-                    </select>
-                </div> 
+                    <div class="input-group m-1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Sort</span>
+                        </div>
+                        <select id="mySelect" class="form-control" name="sort">
+                            <option value="id">id</option>
+                            <option value="name">name</option>
+                            <option value="da">da</option>
+                            <option value="pa">pa</option>
+                            <option value="mozrank">mozrank</option>
+                            <option value="links">links</option>
+                            <option value="equity">equity</option>
+                        </select>
+                    </div> 
                 --}}
 
                 <button class="btn btn-outline-primary m-1" type="submit">Search</button>
@@ -118,7 +118,7 @@
 
     @else
         <div class="container">
-            <form class="form-inline my-2 searchForm" action="/domains" method="get">
+            <form class="form-inline my-2 searchForm" action="/archieve" method="get">
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Name</span>
@@ -134,15 +134,6 @@
                 </div>
 
                 <input type="hidden" name="sort" value="{{ $sort }}">
-
-                {{-- 
-                    <div class="input-group m-1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">Sort</span>
-                        </div>
-                        <input class="form-control" aria-label="order" name="sort" type="text" value="{{ $sort }}" placeholder="Поиск">
-                    </div> 
-                --}}
 
                 <button class="btn btn-outline-primary m-1" type="submit">Search</button>
             </form>

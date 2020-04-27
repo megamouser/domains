@@ -74,7 +74,7 @@
                                     --}}
 
                                     <div class="input-group m-1">
-                                        <button disabled class="btn btn-success m-1" type="submit">
+                                        <button disabled class="btn btn-success m-1">
                                             Exporting ...
                                         </button>
                                     </div>
