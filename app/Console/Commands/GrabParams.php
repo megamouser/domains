@@ -46,21 +46,29 @@ class GrabParams extends Command
         $currentProcessId = DB::table("processes")->insertGetId(["name" => "collecting-$numberArgument", "status" => "runned", "runned_at" => date("Y-m-d H:i:s")]);
 
         $domainsWithoutParams = DB::table("domains")->where("json_params")->get();
-        $domainsWithoutParams = $domainsWithoutParams->chunk("10000")[$numberArgument];
-        foreach ($domainsWithoutParams as $key => $domainWithoutParams) 
+
+        while ($domainsWithoutParams) 
         {
             try {
-                $client = new Client();
-                $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $domainWithoutParams->name);
-                $json = json_encode(json_decode($response->getBody()));
-                DB::table('domains')->where('name', $domainWithoutParams->name)->update(["name" => $domainWithoutParams->name, "da" => json_decode($json)->da, "pa" => json_decode($json)->pa, "moz" => json_decode($json)->mozrank, "links" => json_decode($json)->links, "equity" => json_decode($json)->equity, "json_params" => $json]);
-                // dump($domainWithoutParams->name);
+                $domainsWithoutParams = $domainsWithoutParams->chunk("500")[$numberArgument];
             } catch (\Throwable $th) {
-                // dump($th);
+                DB::table("processes")->truncate();
             }
-        }
 
-        DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
-        dd("end: " . $this->argument("number"));
+            foreach ($domainsWithoutParams as $key => $domainWithoutParams) 
+            {
+                try {
+                    $client = new Client();
+                    $response = $client->request('GET', 'https://seo-rank.my-addr.com/api2/moz+alexa+sr+fb/1BAFA8ED4032A9DAFE1DEB9D0BD6AE6F/' . $domainWithoutParams->name);
+                    $json = json_encode(json_decode($response->getBody()));
+                    DB::table('domains')->where('name', $domainWithoutParams->name)->update(["name" => $domainWithoutParams->name, "da" => json_decode($json)->da, "pa" => json_decode($json)->pa, "moz" => json_decode($json)->mozrank, "links" => json_decode($json)->links, "equity" => json_decode($json)->equity, "json_params" => $json]);
+                } catch (\Throwable $th) {
+                    dump($th);
+                }
+            }
+    
+            DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
+            dd("end: " . $this->argument("number"));
+        }
     }
 }
