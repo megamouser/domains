@@ -20,7 +20,7 @@
             <a class="nav-link" href="/statistics">Statistics</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/storage">Storage</a>
+            <a class="nav-link" href="/archieve">Archieve</a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="/settings">Settings</a>

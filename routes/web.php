@@ -50,9 +50,9 @@ Route::get('statistics/collect', 'StatisticController@collect');
 Route::get('statistics/stopcollect', 'StatisticController@stopcollect');
 
 Route::get('archieve', 'StorageController@index');
-// Route::get('storage/store', 'StorageController@store');
-// Route::post('storage/extract', 'StorageController@extract');
-// Route::post('storage/extractwithoutparams', 'StorageController@extractwithoutparams');
+Route::get('archieve/store', 'StorageController@store');
+Route::post('archieve/extract', 'StorageController@extract');
+Route::post('archieve/extractwithoutparams', 'StorageController@extractwithoutparams');
 
 // Route::get('archieve', function() {
 //     dd("test");

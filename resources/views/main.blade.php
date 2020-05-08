@@ -55,7 +55,7 @@
             </div>
 
             <div class="modal-body">
-                <form method="POST" action="/storage/extract" class="formOne">
+                <form method="POST" action="/archieve/extract" class="formOne">
                     @csrf
 
                     <div class="form-group">
@@ -85,7 +85,7 @@
             </div>
 
             <div class="modal-body">
-                <form method="POST" action="/storage/extractwithoutparams" class="formTwo">
+                <form method="POST" action="/archieve/extractwithoutparams" class="formTwo">
                     @csrf
 
                     <div class="form-group">
@@ -159,7 +159,7 @@
             }
         }
 
-        if(window.location.pathname == "/storage")
+        if(window.location.pathname == "/archieve")
         {
             const modalOneAction = document.querySelector(".modalOneAction");
             const modalTwoAction = document.querySelector(".modalTwoAction");

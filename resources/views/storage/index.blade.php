@@ -9,7 +9,7 @@
         <div class="card">
 
             <div class="card-header">
-                <h1>Storage</h1>
+                <h1>Domains Archieve</h1>
             </div>
 
             <div class="card-body pb-0">
@@ -24,7 +24,7 @@
                         </div>
 
                         @if($domainsCount > 0)
-                            <form action="/storage/store" method="GET">
+                            <form action="/archieve/store" method="GET">
                                 <button class="btn btn-success" type="submit">
                                     Store  
                                 </button>
