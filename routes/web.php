@@ -48,7 +48,8 @@ Route::get('phpinfo', function()
 Route::get('statistics', 'StatisticController@index');
 Route::get('statistics/collect', 'StatisticController@collect');
 Route::get('statistics/stopcollect', 'StatisticController@stopcollect');
-// Route::get('storage', 'StorageController@index');
+
+Route::get('storage', 'StorageController@index');
 // Route::get('storage/store', 'StorageController@store');
 // Route::post('storage/extract', 'StorageController@extract');
 // Route::post('storage/extractwithoutparams', 'StorageController@extractwithoutparams');
