@@ -30,14 +30,21 @@ class StatisticController extends Controller
     public function collect()
     {   
         $processesCount = 10;
-        for ($i = 0; $i < $processesCount; $i ++) {
+        for ($i = 0; $i < $processesCount; $i++) {
             $command = "php " . base_path("artisan") . " command:grabparams $i &";
             $process = new Process($command);
             $process->setTimeout(0);
             $process->disableOutput();
             $process->start();
+
+            // ждать 0.5 секунды
+            usleep(0500000);
         }
 
         return back();
+    }
+
+    public function stopcollect()
+    {
     }
 }   

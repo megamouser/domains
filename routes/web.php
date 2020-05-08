@@ -14,6 +14,8 @@ Route::get('/custom', function() {
     dd(config('app'));
 });
 
+Route::get('/processes', 'HomeController@processes');
+
 Route::get('/domains/statistic', 'DomainController@statistic');
 Route::get('/domains/import', 'DomainController@import');
 Route::post('/domains/import/settings', 'DomainController@importSettings');
@@ -45,4 +47,8 @@ Route::get('phpinfo', function()
 
 Route::get('statistics', 'StatisticController@index');
 Route::get('statistics/collect', 'StatisticController@collect');
-// Route::get('archieve', 'ArchieveController@index');
+Route::get('statistics/stopcollect', 'StatisticController@stopcollect');
+Route::get('storage', 'StorageController@index');
+Route::get('storage/store', 'StorageController@store');
+Route::post('storage/extract', 'StorageController@extract');
+Route::post('storage/extractwithoutparams', 'StorageController@extractwithoutparams');

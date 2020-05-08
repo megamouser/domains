@@ -155,7 +155,7 @@
                         <tbody>
                             <tr>
                                 <th style="text-align: center;">
-                                    <div style="font-weight: bolder; color: #ccc">Список пуст</div>
+                                    <div style="font-weight: bolder; color: #ccc">List is empty</div>
                                 </th>
                             </tr>
                         </tbody>

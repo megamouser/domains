@@ -260,7 +260,9 @@ class DomainController extends Controller
         $params = explode("-", request()->startend);
         $startNum = $params[0];
         $endNum = $params[1];
+        
         $command = "command:domainstoexcel $startNum $endNum &";
+        
         $numberOfProcesses = 1;
 
         for ($i = 0; $i < $numberOfProcesses; $i++) 
@@ -269,6 +271,7 @@ class DomainController extends Controller
             $process->setTimeout(0);
             $process->disableOutput();
             $process->start();
+
             $processes[] = $process;
         }
 

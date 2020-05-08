@@ -42,6 +42,67 @@
 </head>
 <body>
     @yield('content')
+
+    <div class="modal modalOne fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Extracting domains from storage</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="POST" action="/storage/extract" class="formOne">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="domains-count" class="col-form-label">How many domains do you want to exctract?</label>
+                        <input type="number" name="domainsCount" class="form-control" id="domains-count" placeholder="Enter domains count here" value="1000">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submitOne" data-dismiss="modal">Extract</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal modalTwo fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Extracting domains from storage</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="POST" action="/storage/extractwithoutparams" class="formTwo">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="domains-count" class="col-form-label">How many domains without statistic params do you want to exctract?</label>
+                        <input type="number" name="domainsCount" class="form-control" id="domains-count" placeholder="Enter domains count here" value="1000">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary submitTwo" data-dismiss="modal">Extract</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    
 </body>
 <script
   src="https://code.jquery.com/jquery-3.4.1.js"
@@ -51,8 +112,7 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function() 
-    {
+    window.onload = function() {
         if(window.location.pathname== "/domains")
         {
             let sortElems = document.querySelectorAll(".sort");
@@ -77,13 +137,58 @@
             });
         }
 
-        if(window.location.pathname== "/statistics")
+        if(window.location.pathname == "/statistics")
         {
             let getStatisticButton = document.querySelector(".get-statistic");
-            getStatisticButton.addEventListener("click", function(event) {
-                window.location.href = "/statistics/collect";
+            let stopStatisticButton = document.querySelector(".stop-statistic");
+
+            if(stopStatisticButton !== null) 
+            {
+                stopStatisticButton.addEventListener("click", function(event) 
+                {
+                    window.location.href = "/statistics/stopcollect";
+                }); 
+            }
+
+            if(getStatisticButton !== null)
+            {
+                getStatisticButton.addEventListener("click", function(event) 
+                {
+                    window.location.href = "/statistics/collect";
+                });
+            }
+        }
+
+        if(window.location.pathname == "/storage")
+        {
+            const modalOneAction = document.querySelector(".modalOneAction");
+            const modalTwoAction = document.querySelector(".modalTwoAction");
+
+            const modalOne = document.querySelector(".modalOne");
+            const modalTwo = document.querySelector(".modalTwo");
+
+            const formOne = document.querySelector(".formOne");
+            const formTwo = document.querySelector(".formTwo");
+            console.log(formTwo);
+
+            modalOneAction.addEventListener("click", (event) => {
+                $(modalOne).modal("show");
+                const submitOne = document.querySelector(".submitOne");
+
+                submitOne.addEventListener("click", (event) => {
+                    $(formOne).submit();
+                });
+            });
+            
+            modalTwoAction.addEventListener("click", (event) => {
+                $(modalTwo).modal("show");
+                const submitTwo = document.querySelector(".submitTwo");
+                
+                submitTwo.addEventListener("click", (event) => {
+                    $(formTwo).submit();
+                });
             });
         }
-    });
+    };
 </script>
 </html>

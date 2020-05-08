@@ -19,6 +19,7 @@
                 <button class="btn btn-success get-statistic">Start collecting</button>
             @else
                 <button disabled class="btn btn-success get-statistic">Collecting statistic ... </button>
+                <button class="btn btn-danger stop-statistic">Stop</button>
             @endif
         </div>
     @else
