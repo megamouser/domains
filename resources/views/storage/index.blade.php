@@ -13,6 +13,14 @@
             </div>
 
             <div class="card-body pb-0">
+                @if($storageStatus == "runned")
+                    <div class="alert alert-primary">
+                        Processing runned... <br>
+                        Please wait while storage will be done. <br>
+                        You can reload this page to check results.
+                    </div>
+                @endif
+
                 <ul class="list-group">
                     <li class="list-group-item">
                         <div>
@@ -23,12 +31,14 @@
                             </span>
                         </div>
 
-                        @if($domainsCount > 0)
-                            <form action="/archieve/store" method="GET">
-                                <button class="btn btn-success" type="submit">
-                                    Store  
-                                </button>
-                            </form>
+                        @if($storageStatus == "stopped")
+                            @if($domainsCount > 0)
+                                <form action="/archieve/store" method="GET">
+                                    <button class="btn btn-success" type="submit">
+                                        Store  
+                                    </button>
+                                </form>
+                            @endif
                         @endif
                     </li>
 
@@ -47,9 +57,11 @@
                             {{ $domainsInStorageCount }}
                         </span>
 
-                        <div>
-                            <a class="modalOneAction" href="#">Extract</a>
-                        </div>
+                        @if($storageStatus == "stopped")
+                            <div>
+                                <a class="modalOneAction" href="#">Extract</a>
+                            </div>
+                        @endif
                     </li>
 
                     <li class="list-group-item">
@@ -59,9 +71,11 @@
                             {{ $domainsInStorageWithoutStatisticCount }}
                         </span>
 
-                        <div>
-                            <a class="modalTwoAction" href="#">Extract</a>
-                        </div>
+                        @if($storageStatus == "stopped")
+                            <div>
+                                <a class="modalTwoAction" href="#">Extract</a>
+                            </div>
+                        @endif
                     </li>
                 </ul>
             </div>

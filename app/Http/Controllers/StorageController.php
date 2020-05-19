@@ -11,11 +11,12 @@ class StorageController extends Controller
 {
     public function index()
     {
+        $storageStatus = DB::table("processes")->where("name", "storage")->first()->status;
         $domainsCount = DB::table("domains")->count();
         $domainsWithoutStatisticCount = DB::table("domains")->whereNull("json_params")->count();
         $domainsInStorageCount = DB::table("domains_storage")->count();
         $domainsInStorageWithoutStatisticCount = DB::table("domains_storage")->whereNull("json_params")->count();
-        return view("storage/index", compact("domainsCount", "domainsWithoutStatisticCount", "domainsInStorageCount", "domainsInStorageWithoutStatisticCount"));
+        return view("storage/index", compact("domainsCount", "domainsWithoutStatisticCount", "domainsInStorageCount", "domainsInStorageWithoutStatisticCount", "storageStatus"));
     }
 
     public function store()

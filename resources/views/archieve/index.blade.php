@@ -38,6 +38,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Count</span>
                     </div>
+                    
                     <input class="form-control" aria-lsabel="count" name="count" type="number" value="{{ $count }}" placeholder="Поиск">
                 </div>
 
@@ -123,6 +124,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Name</span>
                     </div>
+
                     <input class="form-control" aria-label="search" name="search" type="search" value="{{ $search }}" placeholder="domain name">
                 </div>
                 <div class="input-group m-1">

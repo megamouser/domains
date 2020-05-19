@@ -37,6 +37,8 @@ class ExtractDomains extends Command
      */
     public function handle()
     {   
+        DB::table("processes")->where("name", "storage")->update(["status" => "runned"]);
+
         if($this->option("params"))
         {
             $domainsWithoutParamsFromStorage = DB::table("domains_storage")->whereNull("json_params")->get();
@@ -81,5 +83,7 @@ class ExtractDomains extends Command
                 }   
             }
         }
+
+        DB::table("processes")->where("name", "storage")->update(["status" => "stopped"]);
     }
 }

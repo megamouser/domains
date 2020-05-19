@@ -12,25 +12,19 @@ class StatisticController extends Controller
 {
     public function index()
     {
+        $statisticStatus = DB::table("processes")->where("name", "statistic")->first()->status;
         $query = DB::table("domains")->whereNull("json_params");
         $itemsCount = $query->count();
-
-        $search = "collecting";
-        $runnedCollectionProcess = DB::table("processes")->where("name", "LIKE", "%{$search}%")->where("status", "=", "runned")->get();
-        $collectingAllowed = true;
-
-        if($runnedCollectionProcess->count()) 
-        {
-            $collectingAllowed = false;
-        }
-
-        return view("statistic/index", compact("itemsCount", "collectingAllowed"));
+        return view("statistic/index", compact("itemsCount", "statisticStatus"));
     }
 
     public function collect()
     {   
-        $processesCount = 10;
-        for ($i = 0; $i < $processesCount; $i++) {
+        DB::table("processes")->where("name", "statistic")->update(["status" => "runned"]);
+        $processesCount = 12;
+
+        for ($i = 0; $i < $processesCount; $i++) 
+        {
             $command = "php " . base_path("artisan") . " command:grabparams $i &";
             $process = new Process($command);
             $process->setTimeout(0);
@@ -46,5 +40,21 @@ class StatisticController extends Controller
 
     public function stopcollect()
     {
+        $processesCount = 1;
+        for ($i = 0; $i < $processesCount; $i++) 
+        {
+            $command = "php  " . base_path("artisan") . " command:searchandkill command:grabparams &";
+
+            $process = new Process($command);
+            $process->setTimeout(0);
+            $process->disableOutput();
+            $process->start();
+
+            // ждать 0.5 секунды
+            usleep(0500000);
+        }
+
+        DB::table("processes")->where("name", "statistic")->update(["status" => "stopped"]);
+        return back();
     }
 }   

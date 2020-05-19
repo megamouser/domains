@@ -38,7 +38,6 @@ class ImportExcelToDomains extends Command
      */
     public function handle()
     {
-        $currentProcessId = DB::table("processes")->insertGetId(["name" => "import", "status" => "runned", "runned_at" => date("Y-m-d H:i:s")]);
         $fileRealPath = $this->argument("file");
         $spreadSheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileRealPath);
         $workSheet = $spreadSheet->getActiveSheet();
@@ -54,7 +53,5 @@ class ImportExcelToDomains extends Command
                 DB::table("domains")->updateOrInsert(["name" => $domainName]);
             }
         }
-
-        DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
     }
 }

@@ -40,9 +40,10 @@ class ExportDomainsToExcel extends Command
      */
     public function handle()
     {
+        DB::table("processes")->where("name", "export")->update(["status" => "runned"]);
+
         if($this->argument("startNum") <= $this->argument("endNum"))
         {
-            $currentProcessId = DB::table("processes")->insertGetId(["name" => "export", "status" => "runned", "runned_at" => date("Y-m-d H:i:s")]);
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
@@ -84,64 +85,8 @@ class ExportDomainsToExcel extends Command
             $writer = new Xlsx($spreadsheet);
             $documentName = $this->argument("startNum") . "-" . $this->argument("endNum");
             $writer->save(storage_path("app/public/exported/$documentName.xlsx"));
-            DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
         }
 
-
-        // foreach ($domains as $key => $domain) 
-        // {
-        //     if($startNum < $endNum) 
-        //     {   
-        //         $startNum++;
-        //     }
-        // }
-
-        // dd("end");
-
-
-        // $domains = DB::table("domains")->get();
-        // $domainsInExport = 0;
-
-        // $spreadsheet = new Spreadsheet();
-        // $sheet = $spreadsheet->getActiveSheet();
-
-        // $sheet->setCellValue('A1', 'id');
-        // $sheet->setCellValue('B1', 'name');
-        // $sheet->setCellValue('C1', 'da');
-        // $sheet->setCellValue('D1', 'pa');
-        // $sheet->setCellValue('E1', 'moz');
-        // $sheet->setCellValue('F1', 'links');
-        // $sheet->setCellValue('G1', 'equity');
-        // $sheet->setCellValue('H1', 'json_params');
-        // $sheet->setCellValue('I1', 'created_at');
-        // $sheet->setCellValue('J1', 'updated_at');
-
-        // foreach ($domains as $key => $domain) 
-        // {
-        //     $cellId = $key + 2;
-        //     $domainsInExport++;
-
-        //     $sheet->setCellValue("A$cellId", $domain->id);
-        //     $sheet->setCellValue("B$cellId", $domain->name);
-        //     $sheet->setCellValue("C$cellId", $domain->da);
-        //     $sheet->setCellValue("D$cellId", $domain->pa);
-        //     $sheet->setCellValue("E$cellId", $domain->moz);
-        //     $sheet->setCellValue("F$cellId", $domain->links);
-        //     $sheet->setCellValue("G$cellId", $domain->equity);
-        //     $sheet->setCellValue("H$cellId", $domain->json_params);
-        //     $sheet->setCellValue("I$cellId", $domain->created_at);
-        //     $sheet->setCellValue("J$cellId", $domain->updated_at);
-
-        //     if($domainsInExport == 200000)
-        //     {
-        //         break;
-        //     }
-        // }
-
-        // $writer = new Xlsx($spreadsheet);
-        // $writer->save(storage_path("app/public/exported/export.xlsx"));
-        
-        // DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
-        // dd("end");
+        DB::table("processes")->where("name", "export")->update(["status" => "stopped"]);
     }
 }

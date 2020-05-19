@@ -14,7 +14,8 @@ Route::get('/custom', function() {
     dd(config('app'));
 });
 
-Route::get('/processes', 'HomeController@processes');
+Route::get('/processes', 'ProcessesController@index');
+Route::get('/processes/kill/{pid}', 'ProcessesController@kill');
 
 Route::get('/domains/statistic', 'DomainController@statistic');
 Route::get('/domains/import', 'DomainController@import');

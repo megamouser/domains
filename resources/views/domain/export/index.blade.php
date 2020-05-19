@@ -34,52 +34,27 @@
                             <span class="badge badge-pill badge-info p-2">{{ $domainsCount }}</span>
                         </div>
                         <div class="col">
-                            @if ($exportAllowed)
-                                <form class="form-inline my-2" action="/domains/export/settings" method="get">
-                                    <div class="input-group m-1">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1">Export Count</span>
-                                        </div>
-                                        <select id="mySelect" class="form-control" name="startend">
-                                            <option value="0-200000">0 - 200k</option>
-                                            <option value="200000-400000">200k - 400k</option>
-                                            <option value="400000-800000">400k - 800k</option>
-                                            <option value="800000-1600000">800k - 1.6m</option>
-                                            <option value="1600000-1890000">1.6m - 1.89m</option>
-                                        </select>
-                                        {{-- <input class="form-control" aria-label="order" name="order" type="text" value="{{ $sort }}" placeholder="Поиск"> --}}
+                            <form class="form-inline my-2" action="/domains/export/settings" method="get">
+                                <div class="input-group m-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Export Count</span>
                                     </div>
+                                    <select id="mySelect" class="form-control" name="startend">
+                                        <option value="0-200000">0 - 200k</option>
+                                        <option value="200000-400000">200k - 400k</option>
+                                        <option value="400000-800000">400k - 800k</option>
+                                        <option value="800000-1600000">800k - 1.6m</option>
+                                        <option value="1600000-1890000">1.6m - 1.89m</option>
+                                    </select>
+                                    {{-- <input class="form-control" aria-label="order" name="order" type="text" value="{{ $sort }}" placeholder="Поиск"> --}}
+                                </div>
 
-                                    <div class="input-group m-1">
-                                        <button class="btn btn-success m-1" type="submit">
-                                            Export
-                                        </button>
-                                    </div>
-                                </form>
-                            @else
-                                <form class="form-inline my-2" action="#" method="get">
-                                    {{-- 
-                                    <div class="input-group m-1">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1">Export Count</span>
-                                        </div>
-                                        <select disabled id="mySelect" class="form-control" name="startend">
-                                            <option value="0-200000">0 - 200k</option>
-                                            <option value="200000-400000">200k - 400k</option>
-                                            <option value="400000-800000">400k - 800k</option>
-                                            <option value="800000-1600000">800k - 1.6m</option>
-                                            <option value="1600000-1890000">1.6m - 1.89m</option>
-                                        </select>
-                                    </div> 
-                                    --}}
-
-                                    <div class="input-group m-1">
-                                        <button disabled class="btn btn-success m-1">
-                                            Exporting ...
-                                        </button>
-                                    </div>
-                                </form>
-                            @endif
+                                <div class="input-group m-1">
+                                    <button class="btn btn-success m-1" type="submit">
+                                        Export
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </li>
                 </ul>

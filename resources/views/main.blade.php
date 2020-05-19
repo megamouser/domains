@@ -139,20 +139,20 @@
 
         if(window.location.pathname == "/statistics")
         {
-            let getStatisticButton = document.querySelector(".get-statistic");
-            let stopStatisticButton = document.querySelector(".stop-statistic");
+            let startCollectingButton = document.querySelector(".start-collecting");
+            let stopCollectingButton = document.querySelector(".stop-collecting");
 
-            if(stopStatisticButton !== null) 
+            if(stopCollectingButton !== null) 
             {
-                stopStatisticButton.addEventListener("click", function(event) 
+                stopCollectingButton.addEventListener("click", function(event) 
                 {
                     window.location.href = "/statistics/stopcollect";
                 }); 
             }
 
-            if(getStatisticButton !== null)
+            if(startCollectingButton !== null)
             {
-                getStatisticButton.addEventListener("click", function(event) 
+                startCollectingButton.addEventListener("click", function(event) 
                 {
                     window.location.href = "/statistics/collect";
                 });

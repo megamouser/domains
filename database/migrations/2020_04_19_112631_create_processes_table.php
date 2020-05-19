@@ -17,8 +17,6 @@ class CreateProcessesTable extends Migration
             $table->bigIncrements('id');
             $table->string("name");
             $table->string("status");
-            $table->timestamp("runned_at")->nullable()->default(null);
-            $table->timestamp("stopped_at")->nullable()->default(null);
         });
     }
 

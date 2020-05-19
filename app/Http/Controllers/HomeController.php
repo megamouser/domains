@@ -9,9 +9,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Box\Spout\Common\Entity\Row;
 
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
-
 class HomeController extends Controller
 {
     /**
@@ -54,50 +51,5 @@ class HomeController extends Controller
         $filename = $queryParams->get("filename");
         unlink(storage_path("app/public/" . $filename));
         return back();
-    }
-
-    public function processes()
-    {
-        $command = "ps aux | grep command:grabparams";
-        $process = new Process($command);
-        $process->run();
-        $processOutput = $process->getOutput();
-        $runnedProcessesArray = array_diff(explode("\n", $processOutput), [""]);
-        
-        $clearProcesses = [];
-
-        foreach ($runnedProcessesArray as $key => $value) 
-        {
-            $clearProcesses[] = (array_diff(explode(" ", $value), [""]));
-        }
-
-        dump($clearProcesses);
-        // dd('php ' . base_path('artisan') . " $command &");
-
-        // $numberOfProcesses = 1;
-
-        // for ($i = 0; $i < $numberOfProcesses; $i++) 
-        // {
-        //     $process = new Process('php ' . base_path('artisan') . " $command &");
-        //     $process->setTimeout(0);
-        //     $process->disableOutput();
-        //     $process->start();
-        //     $processes[] = $process;
-        // }
-
-        // while(count($processes))
-        // {
-        //     foreach ($processes as $key => $runningProcess) 
-        //     {
-        //         if(!$runningProcess->isRunning())
-        //         {
-        //             unset($processes[$key]);
-        //         }
-
-        //         sleep(1);
-        //     }
-        // }
-
-        // return back();
     }
 }

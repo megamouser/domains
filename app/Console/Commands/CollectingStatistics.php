@@ -1,17 +1,17 @@
 <?php
 
 namespace App\Console\Commands;
-use Illuminate\Console\Command;
-use DB;
 
-class TestCommand extends Command
+use Illuminate\Console\Command;
+
+class CollectingStatistics extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:test';
+    protected $signature = 'command:collectingstatistics {processesCount}';
 
     /**
      * The console command description.
@@ -37,7 +37,18 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        sleep(10);
-        dd("end");
+        $processesCount = $this->argument("processesCount");
+
+        for ($i = 0; $i < $processesCount; $i++) 
+        {
+            $command = "php " . base_path("artisan") . " command:grabparams $i &";
+            $process = new Process($command);
+            $process->setTimeout(0);
+            $process->disableOutput();
+            $process->start();
+
+            // ждать 0.5 секунды
+            usleep(0500000);
+        }
     }
 }

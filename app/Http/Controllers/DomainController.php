@@ -23,22 +23,6 @@ class DomainController extends Controller
         $this->middleware('auth');
     }
 
-    public function test()
-    {
-        $process = new Process(['ls', '-lsa']);
-        $process->start();
-
-        // ... do other things
-        // waits until the given anonymous function returns true
-        $process->waitUntil(function ($type, $output) {
-            return $output === 'Ready. Waiting for commands...';
-        });
-
-        dd($process);
-
-        // ... do things after the process is ready
-    }
-    
     /**
      * Display a listing of the resource.
      *
@@ -54,6 +38,7 @@ class DomainController extends Controller
         if($queryParams->has("count"))
         {
             $count = $queryParams->get("count");
+            
             if($count == null) 
             {
                 $count = 50;
@@ -191,29 +176,15 @@ class DomainController extends Controller
 
     public function import() 
     { 
-        $runnedExportProcess = DB::table("processes")->where("name", "=", "import")->where("status", "=", "runned")->get();
         $importAllowed = true;
-
-        if($runnedExportProcess->count())
-        {
-            $importAllowed = false;
-        }
-
         return view('domain/import/index', compact('importAllowed'));
     }
 
     public function export()
     {  
-        $runnedExportProcess = DB::table("processes")->where("name", "=", "export")->where("status", "=", "runned")->get();
-        $exportAllowed = true;
-
-        if($runnedExportProcess->count())
-        {
-            $exportAllowed = false;
-        }
-
+        $exportStatus = DB::table("processes")->where("name", "export")->first()->status;
         $domainsCount = DB::table("domains")->count();
-        return view('domain/export/index', compact('domainsCount', 'exportAllowed'));
+        return view('domain/export/index', compact('domainsCount', 'exportStatus'));
     }
 
     public function importSettings(Request $request)
@@ -260,7 +231,7 @@ class DomainController extends Controller
         $params = explode("-", request()->startend);
         $startNum = $params[0];
         $endNum = $params[1];
-        
+
         $command = "command:domainstoexcel $startNum $endNum &";
         
         $numberOfProcesses = 1;

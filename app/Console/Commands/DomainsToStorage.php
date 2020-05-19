@@ -37,7 +37,8 @@ class DomainsToStorage extends Command
      */
     public function handle()
     {
-        $currentProcessId = DB::table("processes")->insertGetId(["name" => "domainstostorage", "status" => "runned", "runned_at" => date("Y-m-d H:i:s")]);
+        DB::table("processes")->where("name", "storage")->update(["status" => "runned"]);
+
         $domains = DB::table("domains")->get();
         
         foreach ($domains as $key => $domain) 
@@ -61,6 +62,6 @@ class DomainsToStorage extends Command
             }
         }
 
-        DB::table("processes")->where("id", $currentProcessId)->update(["status" => "stopped", "stopped_at" => date("Y-m-d H:i:s")]);
+        DB::table("processes")->where("name", "storage")->update(["status" => "stopped"]);
     }
 }
